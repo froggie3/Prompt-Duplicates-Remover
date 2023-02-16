@@ -1,7 +1,7 @@
 class RequestAPI {
-  static API = "https://tools.yokkin.com/prompts/api/";
-  //static API = "http://localhost/prompts/src/api/";
-  static MAXLENGTH: number = 3000;
+  //static API = "https://tools.yokkin.com/prompts/api/";
+  static API = "http://localhost/prompts/src/api/";
+  static MAXLENGTH = 3000;
 
   /**
    *
@@ -13,18 +13,20 @@ class RequestAPI {
     const text = content ?? "";
     const query = `?prompts=${encodeURIComponent(text)}`;
 
-    if (this.isValid(text)) {
+    if (this.withinMaxChar(text)) {
       fetch(`${api + query}`)
         .then(response => response.json())
         .then(data => action(data));
 
       return true;
     }
+
     alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
+
     return false;
   }
 
-  private isValid(text: string): Boolean {
+  private withinMaxChar(text: string): Boolean {
     return text.length < RequestAPI.MAXLENGTH || false;
   }
 }
@@ -33,10 +35,10 @@ class RequestAPI {
  * ページロード時の処理
  */
 
-window.addEventListener("DOMContentLoaded", (): void => {
+window.addEventListener("DOMContentLoaded", () => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-  (function setPromptFromStorage(): void {
+  (function setPromptFromStorage() {
     const prompts = localStorage.getItem("prompt") ?? "";
     const req = new RequestAPI();
     const text = textarea.value;
@@ -44,14 +46,10 @@ window.addEventListener("DOMContentLoaded", (): void => {
     textarea.value = prompts;
 
     req.send(RequestAPI.API, text);
-
-    return;
   })();
 
-  (function setMaxLength(): void {
+  (function setMaxLength() {
     textarea.maxLength = RequestAPI.MAXLENGTH;
-
-    return;
   })();
 
   return;
@@ -61,40 +59,36 @@ window.addEventListener("DOMContentLoaded", (): void => {
  * 共通の処理
  */
 
-function saveCurrentPrompt(prompt: string): void {
+function saveCurrentPrompt(prompt: string) {
   localStorage.setItem(`prompt`, `${prompt}`);
-
-  return;
 }
 
-function action(data: any): void {
-  (function updatePreviewArea(): void {
+function action(data: any) {
+  (function updatePreviewArea() {
     const preview = document.getElementById("preview") as HTMLInputElement;
     const previewData = data.prompts.join(", ");
 
     preview.innerHTML = previewData;
-
-    return;
   })();
 
-  (function updateInfomationArea(): void {
+  (function updateInfomationArea() {
     const reduced = document.getElementById("totalRemoved") as HTMLElement;
     const redundants = document.getElementById("reducedPrompts") as HTMLElement;
 
-    reduced.innerHTML = data.reduced.prompt.length;
-    redundants.innerHTML = data.reduced.prompts.join(", ");
+    const length: number = data.reduced.prompt.length;
+    const prompts: string[] = data.reduced.prompts;
 
-    return;
+    reduced.innerHTML = "" + length;
+    redundants.innerHTML =
+      prompts.length > 0 ? prompts.join(", ") : "<em>(no duplicates)</em>";
   })();
-
-  return;
 }
 
 /**
  * Infomation の項目の開閉処理
  */
 
-((): void => {
+(() => {
   const button = document.getElementById("hideInfo") as HTMLElement;
   const promptInfo = document.querySelector(".prompt-information");
 
@@ -103,7 +97,7 @@ function action(data: any): void {
     isOpen: localStorage.getItem("isPromptInfoOpen") ?? "false",
   };
 
-  (function setInfomationState(): void {
+  (function setInfomationState() {
     if (toggleState.isOpen === "true") {
       button?.classList.add("isopen");
       promptInfo?.classList.remove("ishidden");
@@ -112,91 +106,70 @@ function action(data: any): void {
     }
 
     ++toggleState.counter;
-
-    return;
   })();
 
-  button.onclick = (): void => {
-    ((): void => {
+  button.onclick = () => {
+    (() => {
       toggleState.isOpen = toggleState.counter % 2 === 0 ? "false" : "true";
+
       ++toggleState.counter;
       localStorage.setItem(`isPromptInfoOpen`, toggleState.isOpen);
-
-      return;
     })();
 
-    ((): void => {
+    (() => {
       button?.classList.toggle("isopen");
       promptInfo?.classList.toggle("ishidden");
-
-      return;
     })();
-
-    return;
   };
-
-  return;
 })();
 
 /**
  * テキストエリアの入力に応じてリクエストを行う処理
  */
 
-((): void => {
+(() => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-  textarea.oninput = (): void => {
-    ((): void => {
+  textarea.oninput = () => {
+    (() => {
       const req = new RequestAPI();
       const text = textarea.value;
 
       req.send(RequestAPI.API, text);
-
-      return;
     })();
 
     saveCurrentPrompt(textarea.value);
-
-    return;
   };
-
-  return;
 })();
 
 /**
  * プロンプトをクライアント側で浄化する処理
  */
 
-((): void => {
+(() => {
   const cleanze = document.getElementById("cleanze") as HTMLElement;
   const removeBreak = document.getElementById(
     "removeBreak"
   ) as HTMLInputElement;
   const addSpace = document.getElementById("addSpace") as HTMLInputElement;
 
-  ((): void => {
-    [removeBreak, addSpace].forEach((e): void => {
-      e.onclick = (): void => {
+  (() => {
+    [removeBreak, addSpace].forEach(e => {
+      e.onclick = () => {
         if (!removeBreak.checked && !addSpace.checked) {
           cleanze?.classList.add("cleanze-hidden");
           return;
         }
 
         cleanze?.classList.remove("cleanze-hidden");
-
-        return;
       };
-
-      return;
     });
-
-    return;
   })();
 
-  cleanze.onclick = (): void => {
+  cleanze.onclick = () => {
     const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-    ((): void => {
+    (() => {
       const req = new RequestAPI();
 
       // ここの部分は冗長なので、部分適用を会得したら直す
@@ -241,14 +214,8 @@ function action(data: any): void {
       }
 
       alert("Deletion cannot be applied to an empty prompt!");
-
-      return;
     })();
 
     saveCurrentPrompt(textarea.value);
-
-    return;
   };
-
-  return;
 })();
