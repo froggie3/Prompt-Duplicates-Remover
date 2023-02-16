@@ -1,34 +1,36 @@
 :root {
-  --default-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-family-default: -apple-system, BlinkMacSystemFont, "Segoe UI",
     "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji";
-  --gray-border-color: hsl(0, 0%, 90%);
-  --gray-border-color-focused: hsl(0, 0%, 20%);
-  --default-border-radius: 5px;
-  --primary-text-color: hsl(0deg 0% 30%);
+  --border-color-gray: hsl(0, 0%, 90%);
+  --border-color-gray-focused: hsl(0, 0%, 20%);
+  --border-radius-medium: 5px;
+  --border-radius-small: 3px;
+  --text-color-black: hsl(0deg 0% 30%);
   --max-width: 1240px;
   --primary-shadow: 0px 5px 10px 0px hsl(0deg 0% 0% / 5%);
-  --monospace-font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo,
+  --font-family-monospace: ui-monospace, SFMono-Regular, SF Mono, Menlo,
     Consolas, Liberation Mono, monospace;
-  --primary-transition-duration: 0.2s;
+  --transition-duration-small: 250ms;
+  --background-color-white: hsl(0, 0%, 100%);
 }
 
 body {
-  font-family: var(--default-font-family);
+  font-family: var(--font-family-default);
   word-break: break-all;
-  color: var(--primary-text-color);
+  color: var(--text-color-black);
 }
 
 @media screen and (max-width: 767px) {
   body {
-    font-family: var(--default-font-family);
+    font-family: var(--font-family-default);
     width: 100%;
     font-size: 16px;
   }
 }
 
 textarea {
-  font-family: var(--default-font-family);
+  font-family: var(--font-family-default);
 }
 
 .prompt-wrapper {
@@ -49,21 +51,21 @@ textarea {
 }
 
 .prompt-textarea {
-  background-color: #fff;
-  border-radius: var(--default-border-radius);
-  border: 1px solid var(--gray-border-color);
+  background-color: var(--background-color-white);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--border-color-gray);
   height: calc(100vh - calc(100vh - 100%));
   line-height: 1.5;
   outline: none;
   padding: 0.75rem;
   resize: none;
-  transition: border 0.3s;
-  font-family: var(--monospace-font-family);
+  transition: border var(--transition-duration-small);
+  font-family: var(--font-family-monospace);
   font-size: 0.8em;
 }
 
 .prompt-textarea:focus-visible {
-  border: 1px solid var(--gray-border-color-focused);
+  border: 1px solid var(--border-color-gray-focused);
 }
 
 #preview {
@@ -110,9 +112,9 @@ h6 {
 }
 
 .header-wrapper {
-  background-color: var(--primary-text-color);
+  background-color: var(--text-color-black);
   box-shadow: var(--primary-shadow);
-  color: hsl(0deg 0% 100%);
+  color: var(--background-color-white);
   margin-bottom: 3rem;
   padding: 1rem 1rem;
   width: max(65vw, 100%);
@@ -131,7 +133,7 @@ h6 {
   display: inherit;
   grid: 1fr / repeat(2, 1fr);
   grid-gap: 1rem;
-  background-color: hsl(0deg 0% 99%);
+  background-color: var(--background-color-white);
   padding: 2rem 2rem;
   box-shadow: var(--primary-shadow);
 }
@@ -152,21 +154,22 @@ h6 {
 }
 
 #control :is(#removeBreak, #addSpace, #cleanze, label) {
-  -moz-user-select: none;
-  user-select: none;
   font-size: 0.9em;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #control > #cleanze {
-  background-color: var(--primary-text-color);
+  background-color: var(--text-color-black);
   padding: 0.4em;
-  color: #fff;
+  color: var(--background-color-white);
   font-size: 0.8em;
   border: 1px solid transparent;
-  transition: border-color var(--primary-transition-duration) ease,
-    opacity var(--primary-transition-duration) ease,
-    background-color var(--primary-transition-duration) ease;
-  border-radius: 3px;
+  transition: border-color var(--transition-duration-small) ease,
+    opacity var(--transition-duration-small) ease,
+    background-color var(--transition-duration-small) ease;
+  border-radius: var(--border-radius-small);
   visibility: visible;
   opacity: 1;
 }
@@ -182,21 +185,21 @@ h6 {
 
 #control > #cleanze:hover,
 #control > #cleanze:focus-visible {
-  background-color: white;
-  color: var(--primary-text-color);
-  border-color: var(--primary-text-color);
+  background-color: var(--background-color-white);
+  color: var(--text-color-black);
+  border-color: var(--text-color-black);
 }
 
 .cleanze-hidden {
-  visibility: hidden!important;
-  opacity: 0!important;
+  visibility: hidden !important;
+  opacity: 0 !important;
 }
 
 .prompt-information-wrapper {
   display: inherit;
   grid-column: 1 / 3;
   line-height: 1.5;
-  background-color: hsl(0deg 0% 99%);
+  background-color: var(--background-color-white);
   padding: 2rem;
   box-shadow: var(--primary-shadow);
 }
@@ -216,7 +219,8 @@ h6 {
   grid-column: 1 / 3;
   visibility: visible;
   opacity: 1;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity var(--transition-duration-small),
+    transform var(--transition-duration-small);
 }
 
 @media screen and (max-width: 767px) {
@@ -236,7 +240,7 @@ h6 {
 }
 
 #hideInfo {
-  transition: transform 0.3s;
+  transition: transform var(--transition-duration-small);
   transform: rotate(90deg);
   font-size: 1.5em;
   filter: grayscale(1);
@@ -249,7 +253,7 @@ h6 {
 .ishidden {
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity var(--transition-duration-small), transform var(--transition-duration-small);
   transform: scale(0.98);
 }
 
