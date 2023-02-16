@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en_US">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Yokkin">
+  <meta name="description" content="This tool allows you to remove every duplicated prompts at once.">
+  <meta name="keywords" content="Stable Diffusion, prompt, remove">
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@froggie3_" />
+  <meta name="twitter:site" content="@froggie3_" />
+  <meta property="og:description" content="This tool allows you to remove every duplicated prompts at once." />
+  <meta property="og:locale:alternate" content="ja_JP" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Tools" />
+  <meta property="og:title" content="Prompt Duplicates Remover" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tools.yokkin.com/prompts/" />
+  <meta property="og:image" content="https://tools.yokkin.com/prompts/img/ogp.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <title>Prompt Duplicates Remover</title>
+  <link href="css/ress.min.css" rel="stylesheet">
+  <link href="css/style.css?v=1.0.1" rel="stylesheet">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.1">
+  <link rel="icon" href="img/favicon.ico?v=1.0.1" sizes="any">
+  <link rel="icon" href="img/icon.svg?v=1.0.1" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+
+<body>
+  <div class="header-wrapper">
+    <h1 class="header-title">Prompt Duplicates Remover</h1>
+  </div>
+  <div id="container-layout-grid">
+    <div class="paste-area-wrapper">
+      <h2 class="prompt-information-title">Input</h2>
+      <div id="pasteIn" class="prompt-wrapper">
+        <label for="inputArea">Paste your prompt here (prompts must be separated by “, ”)</label>
+        <textarea id="inputArea" class="prompt-textarea" name="inputArea" placeholder="1girl, solo, ..." rows="10"
+          cols="50"> </textarea>
+      </div>
+      <div id="previewWrap" class="prompt-wrapper">
+        <label for="preview">Cleaned prompt</label>
+        <div id="preview" class="prompt-textarea" name="preview"> </div>
+      </div>
+      <div id="control">
+        <input id="removeBreak" class="" name="removeBreak" type="checkbox"></input>
+        <label for="removeBreak">remove break</label>
+        <input id="addSpace" class="" name="addSpace" type="checkbox"></input>
+        <label for="addSpace">add space before comma</label>
+        <button id="cleanze" name="cleanze" class="cleanze-hidden"></button>
+      </div>
+    </div>
+    <div class="prompt-information-wrapper">
+      <div class="prompt-information-title-wrapper">
+        <h2 class="prompt-information-title">Information</h2>
+        <button id="hideInfo" type="button">🔻</button>
+      </div>
+      <dl class="prompt-information ishidden">
+        <dd> Reduced prompts </dd>
+        <dt id="reducedPrompts"> </dt>
+        <dd> Total prompts removed </dd>
+        <dt id="totalRemoved"> 0 </dt>
+      </dl>
+    </div>
+    <div class="footer-wrapper"> </div>
+  </div>
+  <script src="js/script.js?v=1.0.1"></script>
+</body>
+
+</html>
