@@ -211,7 +211,7 @@ h6 {
   }
 }
 
-.prompt-information {
+#prompt-information {
   margin: 1rem 0;
   grid: auto / 1fr 2fr;
   grid-gap: 1em;
@@ -224,7 +224,7 @@ h6 {
 }
 
 @media screen and (max-width: 767px) {
-  .prompt-information {
+  #prompt-information {
     grid: auto 1fr / 1fr;
     grid-column: 1 / 2;
   }

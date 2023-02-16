@@ -1,6 +1,6 @@
 class RequestAPI {
-  //static API = "https://tools.yokkin.com/prompts/api/";
-  static API = "http://localhost/prompts/src/api/";
+  static API = "https://tools.yokkin.com/prompts/api/";
+  //static API = "http://localhost/prompts/src/api/";
   static MAXLENGTH = 3000;
 
   /**
@@ -43,7 +43,9 @@ window.addEventListener("DOMContentLoaded", () => {
     const req = new RequestAPI();
     const text = textarea.value;
 
-    textarea.value = prompts;
+    if (prompts === "") {
+      updateGUI({});
+    }
 
     req.send(RequestAPI.API, text);
   })();
@@ -64,24 +66,43 @@ function saveCurrentPrompt(prompt: string) {
 }
 
 function action(data: any) {
-  (function updatePreviewArea() {
-    const preview = document.getElementById("preview") as HTMLInputElement;
-    const previewData = data.prompts.join(", ");
+  const prompts: string[] = data.prompts;
+  const reduced: number = data.reduced.prompt.length;
+  const redundants: string[] = data.reduced.prompts;
 
-    preview.innerHTML = previewData;
-  })();
+  // 取得したデータを加工する処理
 
-  (function updateInfomationArea() {
-    const reduced = document.getElementById("totalRemoved") as HTMLElement;
-    const redundants = document.getElementById("reducedPrompts") as HTMLElement;
+  updateGUI({
+    prompts: prompts.join(", "),
+    reduced: "" + reduced,
+    redundants: redundants.length > 0 ? redundants.join(", ") : undefined,
+  });
+}
 
-    const length: number = data.reduced.prompt.length;
-    const prompts: string[] = data.reduced.prompts;
+type updateParameter = {
+  prompts?: string;
+  reduced?: string;
+  redundants?: string;
+};
 
-    reduced.innerHTML = "" + length;
-    redundants.innerHTML =
-      prompts.length > 0 ? prompts.join(", ") : "<em>(no duplicates)</em>";
-  })();
+function updateGUI({ prompts, reduced, redundants }: updateParameter) {
+  const element = {
+    input: document.getElementById("inputArea") as HTMLInputElement,
+    preview: document.getElementById("preview") as HTMLInputElement,
+    reduced: document.getElementById("totalRemoved") as HTMLElement,
+    redundants: document.getElementById("reducedPrompts") as HTMLElement,
+  };
+
+  // 描画処理
+
+  if (element.input.value === "") {
+    element.preview.innerHTML = "";
+    return;
+  }
+
+  element.preview.innerHTML = prompts ?? "0";
+  element.reduced.innerHTML = reduced ?? "0";
+  element.redundants.innerHTML = redundants ?? "<em>(no duplicates)</em>";
 }
 
 /**
@@ -90,7 +111,7 @@ function action(data: any) {
 
 (() => {
   const button = document.getElementById("hideInfo") as HTMLElement;
-  const promptInfo = document.querySelector(".prompt-information");
+  const promptInfo = document.getElementById("prompt-information");
 
   const toggleState = {
     counter: 0,
@@ -134,6 +155,11 @@ function action(data: any) {
     (() => {
       const req = new RequestAPI();
       const text = textarea.value;
+
+      if (text === "") {
+        updateGUI({});
+        return;
+      }
 
       req.send(RequestAPI.API, text);
     })();
