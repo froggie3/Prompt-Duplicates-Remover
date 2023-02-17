@@ -1,6 +1,6 @@
 class RequestAPI {
-  static API = "https://tools.yokkin.com/prompts/api/";
-  //static API = "http://localhost/prompts/src/api/";
+  //static API = "https://tools.yokkin.com/prompts/api/";
+  static API = "http://localhost/prompts/src/api/";
   static MAXLENGTH = 3000;
 
   /**
@@ -9,14 +9,14 @@ class RequestAPI {
    * @param content Specify text to send
    * @returns Returns false when a request was failed
    */
-  public send(api: string, content: string): Boolean {
+  public fetch(api: string, content: string): Boolean {
     const text = content ?? "";
     const query = `?prompts=${encodeURIComponent(text)}`;
 
     if (this.withinMaxChar(text)) {
       fetch(`${api + query}`)
         .then(response => response.json())
-        .then(data => action(data));
+        .then(data => responseProcess(data));
 
       return true;
     }
@@ -44,10 +44,10 @@ window.addEventListener("DOMContentLoaded", () => {
     const text = textarea.value;
 
     if (prompts === "") {
-      updateGUI({});
+      render({});
     }
 
-    req.send(RequestAPI.API, text);
+    req.fetch(RequestAPI.API, text);
   })();
 
   (function setMaxLength() {
@@ -65,14 +65,12 @@ function saveCurrentPrompt(prompt: string) {
   localStorage.setItem(`prompt`, `${prompt}`);
 }
 
-function action(data: any) {
+function responseProcess(data: any) {
   const prompts: string[] = data.prompts;
   const reduced: number = data.reduced.prompt.length;
   const redundants: string[] = data.reduced.prompts;
 
-  // 取得したデータを加工する処理
-
-  updateGUI({
+  render({
     prompts: prompts.join(", "),
     reduced: "" + reduced,
     redundants: redundants.length > 0 ? redundants.join(", ") : undefined,
@@ -85,22 +83,14 @@ type updateParameter = {
   redundants?: string;
 };
 
-function updateGUI({ prompts, reduced, redundants }: updateParameter) {
+function render({ prompts, reduced, redundants }: updateParameter) {
   const element = {
-    input: document.getElementById("inputArea") as HTMLInputElement,
     preview: document.getElementById("preview") as HTMLInputElement,
     reduced: document.getElementById("totalRemoved") as HTMLElement,
     redundants: document.getElementById("reducedPrompts") as HTMLElement,
   };
 
-  // 描画処理
-
-  if (element.input.value === "") {
-    element.preview.innerHTML = "";
-    return;
-  }
-
-  element.preview.innerHTML = prompts ?? "0";
+  element.preview.innerHTML = prompts ?? "";
   element.reduced.innerHTML = reduced ?? "0";
   element.redundants.innerHTML = redundants ?? "<em>(no duplicates)</em>";
 }
@@ -157,11 +147,11 @@ function updateGUI({ prompts, reduced, redundants }: updateParameter) {
       const text = textarea.value;
 
       if (text === "") {
-        updateGUI({});
+        render({});
         return;
       }
 
-      req.send(RequestAPI.API, text);
+      req.fetch(RequestAPI.API, text);
     })();
 
     saveCurrentPrompt(textarea.value);
@@ -233,8 +223,8 @@ function updateGUI({ prompts, reduced, redundants }: updateParameter) {
       textarea.value = content;
 
       if (content !== "") {
-        //console.log(req.send(RequestAPI.API, content) || "Request failed");
-        req.send(RequestAPI.API, content);
+        //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
+        req.fetch(RequestAPI.API, content);
 
         return;
       }
