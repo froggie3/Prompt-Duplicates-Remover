@@ -1,6 +1,17 @@
+type PromptResponse = {
+  prompts: string[];
+  reduced: { prompt: string[]; prompts: string[] };
+};
+
+type updateParameter = {
+  prompts?: string;
+  reduced?: string;
+  redundants?: string;
+};
+
 class RequestAPI {
-  //static API = "https://tools.yokkin.com/prompts/api/";
-  static API = "http://localhost/prompts/src/api/";
+  static API = "https://tools.yokkin.com/prompts/api/";
+  //static API = "http://localhost/prompts/src/api/";
   static MAXLENGTH = 3000;
 
   /**
@@ -13,7 +24,7 @@ class RequestAPI {
     const text = content ?? "";
 
     if (this.withinMaxChar(text)) {
-      const request = await this.request(RequestAPI.API, content);
+      const request = await this.request(RequestAPI.API, text);
 
       responseProcess(request);
       return;
@@ -22,8 +33,7 @@ class RequestAPI {
     alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
   }
 
-  public async request(api: string, content: string): Promise<PromptResponse> {
-    const text = content ?? "";
+  private async request(api: string, text: string): Promise<PromptResponse> {
     const query = `?prompts=${encodeURIComponent(text)}`;
 
     const request = await fetch(`${api + query}`)
@@ -70,11 +80,6 @@ function saveCurrentPrompt(prompt: string): void {
   localStorage.setItem(`prompt`, `${prompt}`);
 }
 
-type PromptResponse = {
-  prompts: string[];
-  reduced: { prompt: string[]; prompts: string[] };
-};
-
 function responseProcess(data: PromptResponse): void {
   const prompts = data.prompts;
   const reduced: number = data.reduced.prompt.length;
@@ -86,12 +91,6 @@ function responseProcess(data: PromptResponse): void {
     redundants: redundants.length > 0 ? redundants.join(", ") : undefined,
   });
 }
-
-type updateParameter = {
-  prompts?: string;
-  reduced?: string;
-  redundants?: string;
-};
 
 function render({ prompts, reduced, redundants }: updateParameter): void {
   const element = {
