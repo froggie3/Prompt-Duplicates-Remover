@@ -262,7 +262,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
 
       if (content !== "") {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
-        //req.fetch(RequestAPI.API, content);
+        req.fetch(content);
         
         return;
       }

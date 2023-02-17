@@ -251,10 +251,11 @@ h6 {
 }
 
 .ishidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity var(--transition-duration-small), transform var(--transition-duration-small);
-  transform: scale(0.98);
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transition: opacity var(--transition-duration-small),
+    transform var(--transition-duration-small) !important;
+  transform: scale(0.98) !important;
 }
 
 .footer-wrapper {
