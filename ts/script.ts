@@ -9,21 +9,28 @@ class RequestAPI {
    * @param content Specify text to send
    * @returns Returns false when a request was failed
    */
-  public fetch(api: string, content: string): Boolean {
+  public async fetch(api: string, content: string): Promise<void> {
     const text = content ?? "";
-    const query = `?prompts=${encodeURIComponent(text)}`;
 
     if (this.withinMaxChar(text)) {
-      fetch(`${api + query}`)
-        .then(response => response.json())
-        .then(data => responseProcess(data));
+      const request = await this.request(RequestAPI.API, content);
 
-      return true;
+      responseProcess(request);
+      return;
     }
 
     alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
+  }
 
-    return false;
+  public async request(api: string, content: string): Promise<PromptResponse> {
+    const text = content ?? "";
+    const query = `?prompts=${encodeURIComponent(text)}`;
+
+    const request = await fetch(`${api + query}`)
+      .then(response => response.json())
+      .then(data => data);
+
+    return request;
   }
 
   private withinMaxChar(text: string): Boolean {
@@ -35,10 +42,10 @@ class RequestAPI {
  * ページロード時の処理
  */
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", (): void => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-  (function setPromptFromStorage() {
+  (function setPromptFromStorage(): void {
     const prompts = localStorage.getItem("prompt") ?? "";
     const req = new RequestAPI();
     const text = textarea.value;
@@ -50,25 +57,28 @@ window.addEventListener("DOMContentLoaded", () => {
     req.fetch(RequestAPI.API, text);
   })();
 
-  (function setMaxLength() {
+  (function setMaxLength(): void {
     textarea.maxLength = RequestAPI.MAXLENGTH;
   })();
-
-  return;
 });
 
 /**
  * 共通の処理
  */
 
-function saveCurrentPrompt(prompt: string) {
+function saveCurrentPrompt(prompt: string): void {
   localStorage.setItem(`prompt`, `${prompt}`);
 }
 
-function responseProcess(data: any) {
-  const prompts: string[] = data.prompts;
+type PromptResponse = {
+  prompts: string[];
+  reduced: { prompt: string[]; prompts: string[] };
+};
+
+function responseProcess(data: PromptResponse): void {
+  const prompts = data.prompts;
   const reduced: number = data.reduced.prompt.length;
-  const redundants: string[] = data.reduced.prompts;
+  const redundants = data.reduced.prompts;
 
   render({
     prompts: prompts.join(", "),
@@ -83,7 +93,7 @@ type updateParameter = {
   redundants?: string;
 };
 
-function render({ prompts, reduced, redundants }: updateParameter) {
+function render({ prompts, reduced, redundants }: updateParameter): void {
   const element = {
     preview: document.getElementById("preview") as HTMLInputElement,
     reduced: document.getElementById("totalRemoved") as HTMLElement,
@@ -99,7 +109,7 @@ function render({ prompts, reduced, redundants }: updateParameter) {
  * Infomation の項目の開閉処理
  */
 
-(() => {
+((): void => {
   const button = document.getElementById("hideInfo") as HTMLElement;
   const promptInfo = document.getElementById("prompt-information");
 
@@ -108,7 +118,7 @@ function render({ prompts, reduced, redundants }: updateParameter) {
     isOpen: localStorage.getItem("isPromptInfoOpen") ?? "false",
   };
 
-  (function setInfomationState() {
+  (function setInfomationState(): void {
     if (toggleState.isOpen === "true") {
       button?.classList.add("isopen");
       promptInfo?.classList.remove("ishidden");
@@ -119,15 +129,15 @@ function render({ prompts, reduced, redundants }: updateParameter) {
     ++toggleState.counter;
   })();
 
-  button.onclick = () => {
-    (() => {
+  button.onclick = (): void => {
+    ((): void => {
       toggleState.isOpen = toggleState.counter % 2 === 0 ? "false" : "true";
 
       ++toggleState.counter;
       localStorage.setItem(`isPromptInfoOpen`, toggleState.isOpen);
     })();
 
-    (() => {
+    ((): void => {
       button?.classList.toggle("isopen");
       promptInfo?.classList.toggle("ishidden");
     })();
@@ -138,11 +148,11 @@ function render({ prompts, reduced, redundants }: updateParameter) {
  * テキストエリアの入力に応じてリクエストを行う処理
  */
 
-(() => {
+((): void => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-  textarea.oninput = () => {
-    (() => {
+  textarea.oninput = (): void => {
+    ((): void => {
       const req = new RequestAPI();
       const text = textarea.value;
 
@@ -162,16 +172,16 @@ function render({ prompts, reduced, redundants }: updateParameter) {
  * プロンプトをクライアント側で浄化する処理
  */
 
-(() => {
+((): void => {
   const cleanze = document.getElementById("cleanze") as HTMLElement;
   const removeBreak = document.getElementById(
     "removeBreak"
   ) as HTMLInputElement;
   const addSpace = document.getElementById("addSpace") as HTMLInputElement;
 
-  (() => {
+  ((): void => {
     [removeBreak, addSpace].forEach(e => {
-      e.onclick = () => {
+      e.onclick = (): void => {
         if (!removeBreak.checked && !addSpace.checked) {
           cleanze?.classList.add("cleanze-hidden");
           return;
@@ -182,10 +192,10 @@ function render({ prompts, reduced, redundants }: updateParameter) {
     });
   })();
 
-  cleanze.onclick = () => {
+  cleanze.onclick = (): void => {
     const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
-    (() => {
+    ((): void => {
       const req = new RequestAPI();
 
       // ここの部分は冗長なので、部分適用を会得したら直す
@@ -225,7 +235,6 @@ function render({ prompts, reduced, redundants }: updateParameter) {
       if (content !== "") {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
         req.fetch(RequestAPI.API, content);
-
         return;
       }
 
