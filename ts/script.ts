@@ -13,24 +13,28 @@ type ValueCount = {
   [index: string]: number;
 };
 
-function processResponse(prompts: string): PromptResponse {
-  const prompts_array = prompts.trim().split(", ");
-  //console.log(prompts_array);
-  const cleaned_prompts = (() => array_unique(Object.values(prompts_array)))();
-  //console.log(cleaned_prompts);
+class RequestLocalAPI {
+  static MAXLENGTH = 3000;
 
-  return {
-    prompts: cleaned_prompts,
-    reduced: {
-      prompt: get_differences(prompts_array),
-      prompts: (() => Object.keys(array_duplicates(prompts_array)))(),
-    },
-  };
-}
+  request(prompts: string): PromptResponse {
+    const prompts_array = prompts.trim().split(", ");
+    const cleaned_prompts = (() =>
+      array_unique(Object.values(prompts_array)))();
 
-function promptProcess(prompts: string): void {
-  const response = processResponse(prompts)
-  responseProcess(response);
+    return {
+      prompts: cleaned_prompts,
+      reduced: {
+        prompt: get_differences(prompts_array),
+        prompts: (() => Object.keys(array_duplicates(prompts_array)))(),
+      },
+    };
+  }
+
+  fetch(prompts: string): void {
+    const response = this.request(prompts);
+
+    responseProcess(response);
+  }
 }
 
 class RequestAPI {
@@ -81,15 +85,15 @@ window.addEventListener("DOMContentLoaded", (): void => {
 
   (function setPromptFromStorage(): void {
     const prompts = localStorage.getItem("prompt") ?? "";
-    // const req = new RequestAPI();
+    const req = new RequestLocalAPI();
     const text = textarea.value;
 
     if (prompts === "") {
       render({});
     }
 
-    // req.fetch(RequestAPI.API, text);
-    promptProcess(text);
+    req.fetch(text);
+    
   })();
 
   (function setMaxLength(): void {
@@ -177,7 +181,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
 
   textarea.oninput = (): void => {
     ((): void => {
-      // const req = new RequestAPI();
+      const req = new RequestLocalAPI();
       const text = textarea.value;
 
       if (text === "") {
@@ -185,8 +189,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
         return;
       }
 
-      // req.fetch(RequestAPI.API, text);
-      promptProcess(text);
+      req.fetch(text);
     })();
 
     saveCurrentPrompt(textarea.value);
@@ -221,7 +224,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
     const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
     ((): void => {
-      // const req = new RequestAPI();
+      const req = new RequestLocalAPI();
 
       // ここの部分は冗長なので、部分適用を会得したら直す
       const content = ((): string => {
@@ -260,7 +263,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       if (content !== "") {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
         //req.fetch(RequestAPI.API, content);
-        promptProcess(content);
+        
         return;
       }
 
@@ -305,7 +308,7 @@ function array_unique(target: string[]): string[] {
 
   for (let e of target) {
     if (array_has_duplicates(e, target)) {
-      let again = (duplicates.length > 0) && duplicates[0] === e;
+      let again = duplicates.length > 0 && duplicates[0] === e;
       if (again) {
         continue;
       }
