@@ -8,4 +8,6 @@ This tool supports you to engineer prompts for generating images with Stable Dif
 
 ## Live example
 
+<img src="artworks/screenshot.png" alt="Prompt Duplicates Remover"/>
+
 <https://tools.yokkin.com/prompts/>
