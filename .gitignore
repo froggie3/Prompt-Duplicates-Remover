@@ -3,3 +3,4 @@ misc/*
 node_modules/*
 src/css/ress.min.css
 src/js/script.js
+legacy/*

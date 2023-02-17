@@ -9,9 +9,3 @@ This tool supports you to engineer prompts for generating images with Stable Dif
 ## Live example
 
 <https://tools.yokkin.com/prompts/>
-
-<img src="artworks/screenshot.png" alt="Prompt Duplicates Remover"/>
-
-## API
-
-The API entrypoint lives in `/api/index.php`.
