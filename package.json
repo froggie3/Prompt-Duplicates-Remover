@@ -1,9 +1,10 @@
 {
   "scripts": {
-    "watch:ts": "npx tsc -w ts/script.ts --outDir src/js",
+    "watch:ts": "npx tsc -w",
     "watch": "npm run watch:ts"
   },
   "devDependencies": {
+    "markdown-wasm": "^1.2.0",
     "ress": "^5.0.2",
     "typescript": "^4.9.5"
   }

@@ -30,16 +30,15 @@ class RequestLocalAPI {
     };
   }
 
-  fetch(prompts: string): void {
+  fetch(prompts: string): PromptResponse {
     const response = this.request(prompts);
-
-    responseProcess(response);
+    return response;
   }
 }
 
 class RequestAPI {
-  //static API = "https://tools.yokkin.com/prompts/api/";
-  static API = "http://localhost/prompts/src/api/";
+  static API = "https://tools.yokkin.com/prompts/api/";
+  //static API = "http://localhost/prompts/src/api/";
   static MAXLENGTH = 3000;
 
   /**
@@ -48,14 +47,16 @@ class RequestAPI {
    * @param content Specify text to send
    * @returns Returns false when a request was failed
    */
-  public async fetch(api: string, content: string): Promise<void> {
+  public async fetch(
+    api: string,
+    content: string
+  ): Promise<PromptResponse | undefined> {
     const text = content ?? "";
 
     if (this.withinMaxChar(text)) {
       const request = await this.request(RequestAPI.API, text);
 
-      responseProcess(request);
-      return;
+      return request;
     }
 
     alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
@@ -92,8 +93,7 @@ window.addEventListener("DOMContentLoaded", (): void => {
       render({});
     }
 
-    req.fetch(text);
-    
+    responseProcess(req.fetch(text));
   })();
 
   (function setMaxLength(): void {
@@ -189,7 +189,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
         return;
       }
 
-      req.fetch(text);
+      responseProcess(req.fetch(text));
     })();
 
     saveCurrentPrompt(textarea.value);
@@ -227,7 +227,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       const req = new RequestLocalAPI();
 
       // ここの部分は冗長なので、部分適用を会得したら直す
-      const content = ((): string => {
+      const text = ((): string => {
         const regEx = {
           default: /\n+|^ +| +$/g,
           trim: /^ +| +$/g,
@@ -258,12 +258,12 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       })();
 
       textarea.value = "";
-      textarea.value = content;
+      textarea.value = text;
 
-      if (content !== "") {
+      if (text !== "") {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
-        req.fetch(content);
-        
+        responseProcess(req.fetch(text));
+
         return;
       }
 
@@ -277,11 +277,11 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
 /**
  * 配列内で重複している値を全て出力する
  *
- * @param $array 重複している値を調べる配列
- * @return array 重複している値を全て含む配列
+ * @param string[] 重複している値を調べる配列
+ * @return string[] 重複している値を全て含む配列
  */
 function get_differences(array: string[]): string[] {
-  let duplicates: ValueCount = array_duplicates(array);
+  const duplicates: ValueCount = array_duplicates(array);
   let out = [];
 
   for (let words in duplicates) {
@@ -295,34 +295,12 @@ function get_differences(array: string[]): string[] {
 }
 
 /**
- * 与えられた配列にある重複した値を削除して返す (array_unique で置換可能)
+ * 与えられた配列にある重複した値を削除して返す
  *
- * @param array $target     重複したエントリを取り除きたい配列
+ * @param target     重複したエントリを取り除きたい配列
  */
 function array_unique(target: string[]): string[] {
-  // 重複するアイテムのない配列
-  let cleaned = [];
-
-  // 重複したアイテムが1個だけたまる配列
-  let duplicates: string[] = [];
-
-  for (let e of target) {
-    if (array_has_duplicates(e, target)) {
-      let again = duplicates.length > 0 && duplicates[0] === e;
-      if (again) {
-        continue;
-      }
-
-      duplicates.pop(); // いらないので捨てる
-      duplicates.push(e);
-      cleaned.push(duplicates[0]);
-    } else {
-      cleaned.push(e);
-    }
-  }
-
-  // (cleaned.length > 0)
-  return cleaned;
+  return Array.from(new Set(target));
 }
 
 /**
@@ -332,8 +310,8 @@ function array_unique(target: string[]): string[] {
  * @param array $prompts        Prompt の入っている配列
  */
 function array_has_duplicates(search_word: string, prompts: string[]): boolean {
-  let duplicates = array_extract_duplicates(search_word, prompts);
-  let duplicates_count = array_count_duplicates_custom(duplicates, true);
+  const duplicates = array_extract_duplicates(search_word, prompts);
+  const duplicates_count = array_count_duplicates_custom(duplicates, true);
   const EXISTS = 1;
 
   if (!duplicates === false && duplicates_count >= EXISTS) {
@@ -344,26 +322,17 @@ function array_has_duplicates(search_word: string, prompts: string[]): boolean {
 }
 
 /**
- * $search_word が 配列 $prompts に含まれている場合は、
- * 自分自身を含む $search_word と重複する値を含んだ配列を返す
+ * $search_word が 配列 prompts に含まれている場合は、
+ * 自分自身を含む search_word と重複する値を含んだ配列を返す
  *
- * @param string $search_word   重複しているかどうか確認する単語
- * @param array $prompts        Prompt の入っている配列
+ * @param string search_word   重複しているかどうか確認する単語
+ * @param string[] prompts        Prompt の入っている配列
  */
 function array_extract_duplicates(
   search_word: string,
   prompts: string[]
 ): string[] {
-  // 全く同一の値が複数入る配列
-  let duplicates = [];
-
-  for (let e of prompts) {
-    if (search_word === e) {
-      duplicates.push(e);
-    }
-  }
-
-  return duplicates;
+  return prompts.filter(e => search_word === e);
 }
 
 /**
@@ -372,12 +341,9 @@ function array_extract_duplicates(
  * @param array $duplicates     全く同一の値が複数入る配列でなければいけない
  * @param bool  $recursive      自分自身の値が $duplicates に含まれていることを考慮に入れて計算する
  */
-function array_count_duplicates_custom(
-  duplicates: string[],
-  recursive: boolean = true
-): number {
+function array_count_duplicates_custom( duplicates: string[], recursive: boolean = true ): number {
   const EXISTS = 1;
-  let count = duplicates.length;
+  const count = duplicates.length;
 
   // -1 が返ってきたらヤバいので
   if (count >= EXISTS && recursive) {
@@ -433,9 +399,9 @@ function array_count_duplicates(
   prompts: string[],
   recursive: boolean = true
 ): number {
-  let duplicates = array_extract_duplicates(search_word, prompts);
-  let EXISTS = 1;
-  let count = duplicates.length;
+  const duplicates = array_extract_duplicates(search_word, prompts);
+  const EXISTS = 1;
+  const count = duplicates.length;
 
   // -1 が返ってきたらヤバいので
   if (count >= EXISTS && recursive) {
