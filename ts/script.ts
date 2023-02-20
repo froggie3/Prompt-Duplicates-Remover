@@ -16,7 +16,7 @@ type ValueCount = {
 class RequestLocalAPI {
   static MAXLENGTH = 3000;
 
-  request(prompts: string): PromptResponse {
+  public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
     const cleaned_prompts = (() =>
       array_unique(Object.values(prompts_array)))();
@@ -30,9 +30,8 @@ class RequestLocalAPI {
     };
   }
 
-  fetch(prompts: string): PromptResponse {
-    const response = this.request(prompts);
-    return response;
+  public fetch(prompts: string): PromptResponse {
+    return this.request(prompts);
   }
 }
 
@@ -85,11 +84,11 @@ window.addEventListener("DOMContentLoaded", (): void => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
   (function setPromptFromStorage(): void {
-    const prompts = localStorage.getItem("prompt") ?? "";
+    const prompts = localStorage.getItem("prompt") ?? undefined;
     const req = new RequestLocalAPI();
     const text = textarea.value;
 
-    if (prompts === "") {
+    if (!prompts) {
       render({});
     }
 
@@ -184,7 +183,8 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       const req = new RequestLocalAPI();
       const text = textarea.value;
 
-      if (text === "") {
+      // when empty text is given
+      if (!text) {
         render({});
         return;
       }
@@ -260,7 +260,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       textarea.value = "";
       textarea.value = text;
 
-      if (text !== "") {
+      if (!!text) {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
         responseProcess(req.fetch(text));
 
@@ -314,11 +314,7 @@ function array_has_duplicates(search_word: string, prompts: string[]): boolean {
   const duplicates_count = array_count_duplicates_custom(duplicates, true);
   const EXISTS = 1;
 
-  if (!duplicates === false && duplicates_count >= EXISTS) {
-    return true;
-  }
-
-  return false;
+  return (!duplicates === false && duplicates_count >= EXISTS) || false;
 }
 
 /**
@@ -341,7 +337,10 @@ function array_extract_duplicates(
  * @param array $duplicates     全く同一の値が複数入る配列でなければいけない
  * @param bool  $recursive      自分自身の値が $duplicates に含まれていることを考慮に入れて計算する
  */
-function array_count_duplicates_custom( duplicates: string[], recursive: boolean = true ): number {
+function array_count_duplicates_custom(
+  duplicates: string[],
+  recursive: boolean = true
+): number {
   const EXISTS = 1;
   const count = duplicates.length;
 
