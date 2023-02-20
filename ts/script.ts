@@ -43,15 +43,17 @@ window.addEventListener("DOMContentLoaded", (): void => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
 
   (function setPromptFromStorage(): void {
-    const prompts = localStorage.getItem("prompt") ?? undefined;
-    const req = new RequestLocalAPI();
-    const text = textarea.value;
+    const prompts = localStorage.getItem("prompt") ?? "";
+    textarea.value = prompts;
 
     if (!prompts) {
       render({});
     }
 
-    responseProcess(req.fetch(text));
+    (() => {
+      const req = new RequestLocalAPI();
+      responseProcess(req.fetch(prompts));
+    })();
   })();
 
   (function setMaxLength(): void {
