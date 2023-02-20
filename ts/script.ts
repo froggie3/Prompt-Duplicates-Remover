@@ -300,7 +300,7 @@ function get_differences(array: string[]): string[] {
  * @param target     重複したエントリを取り除きたい配列
  */
 function array_unique(target: string[]): string[] {
-  return Array.from(new Set(target));
+  return [...new Set(target)];
 }
 
 /**
@@ -311,10 +311,13 @@ function array_unique(target: string[]): string[] {
  */
 function array_has_duplicates(search_word: string, prompts: string[]): boolean {
   const duplicates = array_extract_duplicates(search_word, prompts);
-  const duplicates_count = array_count_duplicates_custom(duplicates, true);
-  const EXISTS = 1;
 
-  return (!duplicates === false && duplicates_count >= EXISTS) || false;
+  // 自分自身の値が配列に含まれていることを考慮に入れて計算する
+  const SELF = 1;
+  const duplicates_count = duplicates.length - SELF;
+
+  const MIN_EXISTS = 1;
+  return (!duplicates === false && duplicates_count >= MIN_EXISTS) || false;
 }
 
 /**
@@ -329,27 +332,6 @@ function array_extract_duplicates(
   prompts: string[]
 ): string[] {
   return prompts.filter(e => search_word === e);
-}
-
-/**
- * 与えられた配列の値が何回重複しているかを数える
- *
- * @param array $duplicates     全く同一の値が複数入る配列でなければいけない
- * @param bool  $recursive      自分自身の値が $duplicates に含まれていることを考慮に入れて計算する
- */
-function array_count_duplicates_custom(
-  duplicates: string[],
-  recursive: boolean = true
-): number {
-  const EXISTS = 1;
-  const count = duplicates.length;
-
-  // -1 が返ってきたらヤバいので
-  if (count >= EXISTS && recursive) {
-    return count - 1;
-  }
-
-  return count;
 }
 
 /**
