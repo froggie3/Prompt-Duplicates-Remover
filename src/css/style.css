@@ -72,6 +72,11 @@ textarea {
   min-height: 1em;
 }
 
+.promptHighlighted {
+  background-color: coral;
+  color: white;
+}
+
 #container-layout-grid {
   display: grid;
   grid-gap: 3rem 0;

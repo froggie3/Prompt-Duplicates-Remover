@@ -35,47 +35,6 @@ class RequestLocalAPI {
   }
 }
 
-class RequestAPI {
-  static API = "https://tools.yokkin.com/prompts/api/";
-  //static API = "http://localhost/prompts/src/api/";
-  static MAXLENGTH = 3000;
-
-  /**
-   *
-   * @param api Specify an API entrypoint to use
-   * @param content Specify text to send
-   * @returns Returns false when a request was failed
-   */
-  public async fetch(
-    api: string,
-    content: string
-  ): Promise<PromptResponse | undefined> {
-    const text = content ?? "";
-
-    if (this.withinMaxChar(text)) {
-      const request = await this.request(RequestAPI.API, text);
-
-      return request;
-    }
-
-    alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
-  }
-
-  private async request(api: string, text: string): Promise<PromptResponse> {
-    const query = `?prompts=${encodeURIComponent(text)}`;
-
-    const request = await fetch(`${api + query}`)
-      .then(response => response.json())
-      .then(data => data);
-
-    return request;
-  }
-
-  private withinMaxChar(text: string): boolean {
-    return text.length < RequestAPI.MAXLENGTH || false;
-  }
-}
-
 /**
  * ページロード時の処理
  */
@@ -96,7 +55,7 @@ window.addEventListener("DOMContentLoaded", (): void => {
   })();
 
   (function setMaxLength(): void {
-    textarea.maxLength = RequestAPI.MAXLENGTH;
+    textarea.maxLength = RequestLocalAPI.MAXLENGTH;
   })();
 });
 
@@ -127,9 +86,24 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
     redundants: document.getElementById("reducedPrompts") as HTMLElement,
   };
 
-  element.preview.innerHTML = prompts ?? "";
+  element.preview.innerHTML = injectSpanTag(prompts, redundants) ?? "";
   element.reduced.innerHTML = reduced ?? "0";
   element.redundants.innerHTML = redundants ?? "<em>(no duplicates)</em>";
+}
+
+function injectSpanTag(prompt = "", redundants = ""): string | undefined {
+  if (!prompt) return undefined;
+
+  const array = prompt.split(", ");
+  const refer = redundants.split(", ");
+
+  const output = [...new Set(array)].flatMap(e =>
+    refer.includes(e)
+      ? [['<span class="promptHighlighted">', e, "</span>"].join("")]
+      : [e]
+  );
+
+  return output.join(", ");
 }
 
 /**
