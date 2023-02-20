@@ -16,7 +16,7 @@ type ValueCount = {
 class RequestLocalAPI {
   static MAXLENGTH = 3000;
 
-  request(prompts: string): PromptResponse {
+  public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
     const cleaned_prompts = (() =>
       array_unique(Object.values(prompts_array)))();
@@ -30,49 +30,8 @@ class RequestLocalAPI {
     };
   }
 
-  fetch(prompts: string): void {
-    const response = this.request(prompts);
-
-    responseProcess(response);
-  }
-}
-
-class RequestAPI {
-  //static API = "https://tools.yokkin.com/prompts/api/";
-  static API = "http://localhost/prompts/src/api/";
-  static MAXLENGTH = 3000;
-
-  /**
-   *
-   * @param api Specify an API entrypoint to use
-   * @param content Specify text to send
-   * @returns Returns false when a request was failed
-   */
-  public async fetch(api: string, content: string): Promise<void> {
-    const text = content ?? "";
-
-    if (this.withinMaxChar(text)) {
-      const request = await this.request(RequestAPI.API, text);
-
-      responseProcess(request);
-      return;
-    }
-
-    alert(`Exceeded max text length ${RequestAPI.MAXLENGTH} characters!`);
-  }
-
-  private async request(api: string, text: string): Promise<PromptResponse> {
-    const query = `?prompts=${encodeURIComponent(text)}`;
-
-    const request = await fetch(`${api + query}`)
-      .then(response => response.json())
-      .then(data => data);
-
-    return request;
-  }
-
-  private withinMaxChar(text: string): boolean {
-    return text.length < RequestAPI.MAXLENGTH || false;
+  public fetch(prompts: string): PromptResponse {
+    return this.request(prompts);
   }
 }
 
@@ -85,19 +44,20 @@ window.addEventListener("DOMContentLoaded", (): void => {
 
   (function setPromptFromStorage(): void {
     const prompts = localStorage.getItem("prompt") ?? "";
-    const req = new RequestLocalAPI();
-    const text = textarea.value;
+    textarea.value = prompts;
 
-    if (prompts === "") {
+    if (!prompts) {
       render({});
     }
 
-    req.fetch(text);
-    
+    (() => {
+      const req = new RequestLocalAPI();
+      responseProcess(req.fetch(prompts));
+    })();
   })();
 
   (function setMaxLength(): void {
-    textarea.maxLength = RequestAPI.MAXLENGTH;
+    textarea.maxLength = RequestLocalAPI.MAXLENGTH;
   })();
 });
 
@@ -128,9 +88,24 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
     redundants: document.getElementById("reducedPrompts") as HTMLElement,
   };
 
-  element.preview.innerHTML = prompts ?? "";
+  element.preview.innerHTML = injectSpanTag(prompts, redundants) ?? "";
   element.reduced.innerHTML = reduced ?? "0";
   element.redundants.innerHTML = redundants ?? "<em>(no duplicates)</em>";
+}
+
+function injectSpanTag(prompt = "", redundants = ""): string | undefined {
+  if (!prompt) return undefined;
+
+  const array = prompt.split(", ");
+  const refer = redundants.split(", ");
+
+  const output = [...new Set(array)].flatMap(e =>
+    refer.includes(e)
+      ? [['<span class="promptHighlighted">', e, "</span>"].join("")]
+      : [e]
+  );
+
+  return output.join(", ");
 }
 
 /**
@@ -184,12 +159,13 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       const req = new RequestLocalAPI();
       const text = textarea.value;
 
-      if (text === "") {
+      // when empty text is given
+      if (!text) {
         render({});
         return;
       }
 
-      req.fetch(text);
+      responseProcess(req.fetch(text));
     })();
 
     saveCurrentPrompt(textarea.value);
@@ -227,7 +203,7 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       const req = new RequestLocalAPI();
 
       // ここの部分は冗長なので、部分適用を会得したら直す
-      const content = ((): string => {
+      const text = ((): string => {
         const regEx = {
           default: /\n+|^ +| +$/g,
           trim: /^ +| +$/g,
@@ -258,12 +234,12 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
       })();
 
       textarea.value = "";
-      textarea.value = content;
+      textarea.value = text;
 
-      if (content !== "") {
+      if (!!text) {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
-        req.fetch(content);
-        
+        responseProcess(req.fetch(text));
+
         return;
       }
 
@@ -277,11 +253,11 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
 /**
  * 配列内で重複している値を全て出力する
  *
- * @param $array 重複している値を調べる配列
- * @return array 重複している値を全て含む配列
+ * @param string[] 重複している値を調べる配列
+ * @return string[] 重複している値を全て含む配列
  */
 function get_differences(array: string[]): string[] {
-  let duplicates: ValueCount = array_duplicates(array);
+  const duplicates: ValueCount = array_duplicates(array);
   let out = [];
 
   for (let words in duplicates) {
@@ -295,34 +271,12 @@ function get_differences(array: string[]): string[] {
 }
 
 /**
- * 与えられた配列にある重複した値を削除して返す (array_unique で置換可能)
+ * 与えられた配列にある重複した値を削除して返す
  *
- * @param array $target     重複したエントリを取り除きたい配列
+ * @param target     重複したエントリを取り除きたい配列
  */
 function array_unique(target: string[]): string[] {
-  // 重複するアイテムのない配列
-  let cleaned = [];
-
-  // 重複したアイテムが1個だけたまる配列
-  let duplicates: string[] = [];
-
-  for (let e of target) {
-    if (array_has_duplicates(e, target)) {
-      let again = duplicates.length > 0 && duplicates[0] === e;
-      if (again) {
-        continue;
-      }
-
-      duplicates.pop(); // いらないので捨てる
-      duplicates.push(e);
-      cleaned.push(duplicates[0]);
-    } else {
-      cleaned.push(e);
-    }
-  }
-
-  // (cleaned.length > 0)
-  return cleaned;
+  return [...new Set(target)];
 }
 
 /**
@@ -332,59 +286,28 @@ function array_unique(target: string[]): string[] {
  * @param array $prompts        Prompt の入っている配列
  */
 function array_has_duplicates(search_word: string, prompts: string[]): boolean {
-  let duplicates = array_extract_duplicates(search_word, prompts);
-  let duplicates_count = array_count_duplicates_custom(duplicates, true);
-  const EXISTS = 1;
+  const duplicates = array_extract_duplicates(search_word, prompts);
 
-  if (!duplicates === false && duplicates_count >= EXISTS) {
-    return true;
-  }
+  // 自分自身の値が配列に含まれていることを考慮に入れて計算する
+  const SELF = 1;
+  const duplicates_count = duplicates.length - SELF;
 
-  return false;
+  const MIN_EXISTS = 1;
+  return (!duplicates === false && duplicates_count >= MIN_EXISTS) || false;
 }
 
 /**
- * $search_word が 配列 $prompts に含まれている場合は、
- * 自分自身を含む $search_word と重複する値を含んだ配列を返す
+ * $search_word が 配列 prompts に含まれている場合は、
+ * 自分自身を含む search_word と重複する値を含んだ配列を返す
  *
- * @param string $search_word   重複しているかどうか確認する単語
- * @param array $prompts        Prompt の入っている配列
+ * @param string search_word   重複しているかどうか確認する単語
+ * @param string[] prompts        Prompt の入っている配列
  */
 function array_extract_duplicates(
   search_word: string,
   prompts: string[]
 ): string[] {
-  // 全く同一の値が複数入る配列
-  let duplicates = [];
-
-  for (let e of prompts) {
-    if (search_word === e) {
-      duplicates.push(e);
-    }
-  }
-
-  return duplicates;
-}
-
-/**
- * 与えられた配列の値が何回重複しているかを数える
- *
- * @param array $duplicates     全く同一の値が複数入る配列でなければいけない
- * @param bool  $recursive      自分自身の値が $duplicates に含まれていることを考慮に入れて計算する
- */
-function array_count_duplicates_custom(
-  duplicates: string[],
-  recursive: boolean = true
-): number {
-  const EXISTS = 1;
-  let count = duplicates.length;
-
-  // -1 が返ってきたらヤバいので
-  if (count >= EXISTS && recursive) {
-    return count - 1;
-  }
-
-  return count;
+  return prompts.filter(e => search_word === e);
 }
 
 /**
@@ -433,9 +356,9 @@ function array_count_duplicates(
   prompts: string[],
   recursive: boolean = true
 ): number {
-  let duplicates = array_extract_duplicates(search_word, prompts);
-  let EXISTS = 1;
-  let count = duplicates.length;
+  const duplicates = array_extract_duplicates(search_word, prompts);
+  const EXISTS = 1;
+  const count = duplicates.length;
 
   // -1 が返ってきたらヤバいので
   if (count >= EXISTS && recursive) {

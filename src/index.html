@@ -1,33 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="no-js" lang="en" prefix="og: http://ogp.me/ns#">
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="author" content="Yokkin">
+  <title>Prompt Duplicates Remover</title>
   <meta name="description" content="This tool allows you to remove every duplicated prompts at once.">
-  <meta name="keywords" content="Stable Diffusion, prompt, remove">
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:creator" content="@froggie3_" />
-  <meta name="twitter:site" content="@froggie3_" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta property="og:description" content="This tool allows you to remove every duplicated prompts at once." />
-  <meta property="og:locale:alternate" content="ja_JP" />
-  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://tools.yokkin.com/prompts/img/ogp.png" />
   <meta property="og:site_name" content="Tools" />
   <meta property="og:title" content="Prompt Duplicates Remover" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://tools.yokkin.com/prompts/" />
-  <meta property="og:image" content="https://tools.yokkin.com/prompts/img/ogp.png" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <title>Prompt Duplicates Remover</title>
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@froggie3_" />
+  <meta name="twitter:site" content="@froggie3_" />
   <link href="css/ress.min.css" rel="stylesheet">
-  <link href="css/style.css?v=1.0.2" rel="stylesheet">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.2">
-  <link rel="icon" href="img/favicon.ico?v=1.0.2" sizes="any">
-  <link rel="icon" href="img/icon.svg?v=1.0.2" type="image/svg+xml">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link href="css/style.css?v=1.0.4a" rel="stylesheet">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.4a">
+  <link rel="icon" href="img/favicon.ico?v=1.0.4a" sizes="any">
+  <link rel="icon" href="img/icon.svg?v=1.0.4a" type="image/svg+xml">
+  <meta name="theme-color" content="#333333">
 </head>
 
 <body>
@@ -68,7 +62,15 @@
     </div>
     <div class="footer-wrapper"> </div>
   </div>
-  <script src="js/script.js?v=1.0.2"></script>
+  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+  <!-- <script src="js/vendor/markdown.js"></script>
+  <script>
+    window[ "markdown" ].ready.then(markdown => {
+      console.log(markdown.parse("# hello\n*world*"))
+    })
+  </script> -->
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js?v=1.0.4a" type="module"></script>
 </body>
 
 </html>

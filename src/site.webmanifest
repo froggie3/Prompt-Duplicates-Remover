@@ -1,8 +1,7 @@
 {
-  "background_color": "white",
+  "short_name": "Prompt Clean",
   "description": "This tool allows you to remove every duplicated prompt at once",
   "name": "Prompt Duplicates Remover",
-  "short_name": "Prompt Clean",
   "icons": [
     {
       "src": "img/icon-192.png",
@@ -14,5 +13,8 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ]
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#333333"
 }
