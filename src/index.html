@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta property="og:description" content="This tool allows you to remove every duplicated prompts at once." />
   <meta property="og:image" content="https://tools.yokkin.com/prompts/img/ogp.png" />
-  <meta property="og:site_name" content="Tools" />
+  <meta property="og:site_name" content="Prompt Duplicates Remover" />
   <meta property="og:title" content="Prompt Duplicates Remover" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://tools.yokkin.com/prompts/" />
@@ -16,11 +16,11 @@
   <meta name="twitter:creator" content="@froggie3_" />
   <meta name="twitter:site" content="@froggie3_" />
   <link href="css/ress.min.css" rel="stylesheet">
-  <link href="css/style.css?v=1.0.4a" rel="stylesheet">
+  <link href="css/style.css?v=1.0.6b" rel="stylesheet">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.4a">
-  <link rel="icon" href="img/favicon.ico?v=1.0.4a" sizes="any">
-  <link rel="icon" href="img/icon.svg?v=1.0.4a" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.6b">
+  <link rel="icon" href="img/favicon.ico?v=1.0.6b" sizes="any">
+  <link rel="icon" href="img/icon.svg?v=1.0.6b" type="image/svg+xml">
   <meta name="theme-color" content="#333333">
 </head>
 
@@ -30,7 +30,14 @@
   </div>
   <div id="container-layout-grid">
     <div class="paste-area-wrapper">
-      <h2 class="prompt-information-title">Input</h2>
+      <div class="prompt-information-title-wrapper">
+        <h2 class="prompt-information-title">Input</h2>
+        <nav id="header-navigation">
+          <span>📖</span>
+          <a class="button" href="howto-en.html" title="Guide">Guide</a>
+          <a class="button" href="howto-ja.html" title="使い方">使い方</a>
+        </nav>
+      </div>
       <div id="pasteIn" class="prompt-wrapper">
         <label for="inputArea">Paste your prompt here (prompts must be separated by “, ”)</label>
         <textarea id="inputArea" class="prompt-textarea" name="inputArea" placeholder="1girl, solo, ..." rows="10"
@@ -40,12 +47,14 @@
         <label for="preview">Cleaned prompt</label>
         <div id="preview" class="prompt-textarea" name="preview"> </div>
       </div>
-      <div id="control">
-        <input id="removeBreak" class="" name="removeBreak" type="checkbox"></input>
-        <label for="removeBreak">remove break</label>
-        <input id="addSpace" class="" name="addSpace" type="checkbox"></input>
-        <label for="addSpace">add space before comma</label>
-        <button id="cleanze" name="cleanze" class="cleanze-hidden"></button>
+      <div id="control-area">
+        <div id="control">
+          <input id="removeBreak" class="" name="removeBreak" type="checkbox"></input>
+          <label for="removeBreak">remove break</label>
+          <input id="addSpace" class="" name="addSpace" type="checkbox"></input>
+          <label for="addSpace">add space before comma</label>
+          <button id="cleanze" name="cleanze" class="button cleanze-hidden" type="button"></button>
+        </div>
       </div>
     </div>
     <div class="prompt-information-wrapper">
@@ -60,17 +69,10 @@
         <dt id="totalRemoved"> </dt>
       </dl>
     </div>
-    <div class="footer-wrapper"> </div>
   </div>
   <script src="js/vendor/modernizr-3.11.2.min.js"></script>
-  <!-- <script src="js/vendor/markdown.js"></script>
-  <script>
-    window[ "markdown" ].ready.then(markdown => {
-      console.log(markdown.parse("# hello\n*world*"))
-    })
-  </script> -->
   <script src="js/plugins.js"></script>
-  <script src="js/script.js?v=1.0.4a" type="module"></script>
+  <script src="js/script.js?v=1.0.6b" type="module"></script>
 </body>
 
 </html>

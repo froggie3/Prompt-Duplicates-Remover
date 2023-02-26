@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" prefix="og: http://ogp.me/ns#">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Guide - Prompt Duplicates Remover</title>
+  <meta name="description" content="This tool allows you to remove every duplicated prompts at once.">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta property="og:description" content="This tool allows you to remove every duplicated prompts at once." />
+  <meta property="og:image" content="https://tools.yokkin.com/prompts/img/ogp.png" />
+  <meta property="og:site_name" content="Prompt Duplicates Remover" />
+  <meta property="og:title" content="Guide" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tools.yokkin.com/prompts/howto-en.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@froggie3_" />
+  <meta name="twitter:site" content="@froggie3_" />
+  <link href="css/ress.min.css" rel="stylesheet">
+  <link href="css/style.css?v=1.0.6b" rel="stylesheet">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=1.0.6b">
+  <link rel="icon" href="img/favicon.ico?v=1.0.6b" sizes="any">
+  <link rel="icon" href="img/icon.svg?v=1.0.6b" type="image/svg+xml">
+  <meta name="theme-color" content="#333333">
+</head>
+
+<body>
+  <div class="header-wrapper">
+    <h1 class="header-title">Prompt Duplicates Remover</h1>
+  </div>
+  <div class="document-wrapper">
+    <div class="readme">
+      <img src="img/ogp.png" width="480" alt="A Header image for Prompt Duplicates Remover"/>
+      <h2 id="what-is-this">What is this?</h2>
+      <p>A handy tool that can eliminate any duplicated tokens in your prompt:</p>
+      <p>We engineer prompts in generating images with Stable Diffusion where you combine words and phrases. It
+        sometimes, however, makes us struggled since the more words we deel with the harder we manage all of them, for
+        example, it is not rare for us to allow the prompt to have duplicated words. The tool enables it more easier,
+        and sanitizes, and deletes any duplicated words in a prompt.</p>
+      <h2 id="how-to-use">How to use</h2>
+      <p>Paste your prompt into the textarea laveled with “Paste your prompt here“ .
+      </p>
+      <img src="img/readme/2023-02-26 133316.png" width="480" alt="textbox to contain prompts" />
+
+      <p>The tool parses the prompt at
+        once, gets rid of the redundant words, and then displays the result. You can select the output text and copy
+        into the clipboard to use it for generating images you like.</p>
+      <img src="img/readme/2023-02-26 133316.png" width="480" alt="textbox to contain prompts" />
+
+      <p>The section below have “Reduced prompts“ and “Total prompts removed“ each. “Reduced prompts“ is a brief
+        summary for the deleted words, whereas “Total prompts removed“ refers to the total number of tokens deleted.
+      </p>
+      <img src="img/readme/2023-02-26 133554.png" width="480" alt="duplicated kind of prompts" />
+
+      <h2 id="questions-and-answers">Questions and Answers</h2>
+      <dl>
+        <dt>
+          <p>
+            Is my prompt sent to somewhere?
+          </p>
+        </dt>
+        <dd>
+          <p>
+            No. The tools process all the prompts within your browser only, and therefore your prompt will not go
+            out of your browser.
+          </p>
+        </dd>
+        <dt>
+          <p>
+            What are two checkbox under the textarea?
+          </p>
+          <img src="img/readme/2023-02-26 133419.png" width="480" alt="checkboxes shown below" />
+        </dt>
+        <dd>
+          <p>
+            The checkbox provides two options to optimize the prompt input. “remove breaks“ just eliminates unwanted
+            breaks in a prompt and “add space before comma“ places a comma after spaces. As you mark the checkbox, a
+            button appears next to the checkbox.
+          </p>
+        </dd>
+      </dl>
+    </div>
+  </div>
+  <script src="js/vendor/modernizr-3.11.2.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/script.js?v=1.0.6b" type="module"></script>
+</body>
+
+</html>

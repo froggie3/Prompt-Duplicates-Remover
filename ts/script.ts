@@ -14,7 +14,7 @@ type ValueCount = {
 };
 
 class RequestLocalAPI {
-  static MAXLENGTH = 3000;
+  static MAXLENGTH = 100000;
 
   public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
