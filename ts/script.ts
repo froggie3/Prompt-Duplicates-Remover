@@ -18,8 +18,7 @@ class RequestLocalAPI {
 
   public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
-    const cleaned_prompts = (() =>
-      array_unique(Object.values(prompts_array)))();
+    const cleaned_prompts = array_unique(Object.values(prompts_array));
 
     return {
       prompts: cleaned_prompts,
@@ -32,6 +31,11 @@ class RequestLocalAPI {
 
   public fetch(prompts: string): PromptResponse {
     return this.request(prompts);
+  }
+
+  public extractText(text: string) {
+    const result = /\(?(.+)\)?/g.exec(text);
+    return result ? result[1] : "";
   }
 }
 
@@ -270,30 +274,8 @@ function get_differences(array: string[]): string[] {
   // white, white, white, repeated
 }
 
-/**
- * 与えられた配列にある重複した値を削除して返す
- *
- * @param target     重複したエントリを取り除きたい配列
- */
 function array_unique(target: string[]): string[] {
   return [...new Set(target)];
-}
-
-/**
- * 与えられた配列の値が重複しているかを確認する
- *
- * @param string $search_word   重複しているかどうか確認する単語
- * @param array $prompts        Prompt の入っている配列
- */
-function array_has_duplicates(search_word: string, prompts: string[]): boolean {
-  const duplicates = array_extract_duplicates(search_word, prompts);
-
-  // 自分自身の値が配列に含まれていることを考慮に入れて計算する
-  const SELF = 1;
-  const duplicates_count = duplicates.length - SELF;
-
-  const MIN_EXISTS = 1;
-  return (!duplicates === false && duplicates_count >= MIN_EXISTS) || false;
 }
 
 /**
@@ -335,35 +317,8 @@ function array_duplicates(array: string[]): ValueCount {
 }
 
 function array_count_values(array: any[]): object {
-  let object: any = {};
+  const obj: { [index: string]: number } = {};
+  array.forEach(k => (obj[k] = (obj[k] || 0) + 1));
 
-  for (let value of array) {
-    object[value] = array_count_duplicates(value, array, false);
-  }
-
-  return object;
-}
-
-/**
- * 指定された単語が、配列のなかで何回重複しているかを数える
- *
- * @param string $search_word   重複しているかどうか確認する単語
- * @param array $prompts        Prompt の入っている配列
- * @param bool  $recursive      自分自身の値が $duplicates に含まれていることを考慮に入れて計算する
- */
-function array_count_duplicates(
-  search_word: string,
-  prompts: string[],
-  recursive: boolean = true
-): number {
-  const duplicates = array_extract_duplicates(search_word, prompts);
-  const EXISTS = 1;
-  const count = duplicates.length;
-
-  // -1 が返ってきたらヤバいので
-  if (count >= EXISTS && recursive) {
-    return count - 1;
-  }
-
-  return count;
+  return obj;
 }
