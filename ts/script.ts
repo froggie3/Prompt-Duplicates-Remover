@@ -9,10 +9,6 @@ type updateParameter = {
   redundants?: string;
 };
 
-type ValueCount = {
-  [index: string]: number;
-};
-
 class RequestLocalAPI {
   static MAXLENGTH = 100000;
 
@@ -50,9 +46,7 @@ window.addEventListener("DOMContentLoaded", (): void => {
     const prompts = localStorage.getItem("prompt") ?? "";
     textarea.value = prompts;
 
-    if (!prompts) {
-      render({});
-    }
+    if (!prompts) render({});
 
     (() => {
       const req = new RequestLocalAPI();
@@ -120,28 +114,23 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
   const button = document.getElementById("hideInfo") as HTMLElement;
   const promptInfo = document.getElementById("prompt-information");
 
-  const toggleState = {
-    counter: 0,
-    isOpen: localStorage.getItem("isPromptInfoOpen") ?? "false",
-  };
+  let counter = 0;
+  let isopen = localStorage.getItem("isPromptInfoOpen") ?? "false"; 
 
   (function setInfomationState(): void {
-    if (toggleState.isOpen === "true") {
+    if (isopen === "true") {
       button?.classList.add("isopen");
       promptInfo?.classList.remove("ishidden");
-
       return;
     }
-
-    ++toggleState.counter;
+    ++counter;
   })();
 
   button.onclick = (): void => {
     ((): void => {
-      toggleState.isOpen = toggleState.counter % 2 === 0 ? "false" : "true";
-
-      ++toggleState.counter;
-      localStorage.setItem(`isPromptInfoOpen`, toggleState.isOpen);
+      isopen = counter % 2 === 0 ? "false" : "true";
+      ++counter;
+      localStorage.setItem(`isPromptInfoOpen`, isopen);
     })();
 
     ((): void => {
@@ -182,19 +171,16 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
 
 ((): void => {
   const cleanze = document.getElementById("cleanze") as HTMLElement;
-  const removeBreak = document.getElementById(
-    "removeBreak"
-  ) as HTMLInputElement;
+  const rmbr = document.getElementById("removeBreak") as HTMLInputElement;
   const addSpace = document.getElementById("addSpace") as HTMLInputElement;
 
   ((): void => {
-    [removeBreak, addSpace].forEach(e => {
+    [rmbr, addSpace].forEach(e => {
       e.onclick = (): void => {
-        if (!removeBreak.checked && !addSpace.checked) {
+        if (!rmbr.checked && !addSpace.checked) {
           cleanze?.classList.add("cleanze-hidden");
           return;
         }
-
         cleanze?.classList.remove("cleanze-hidden");
       };
     });
@@ -214,19 +200,15 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
           break: /\n+/g,
         };
 
-        if (removeBreak.checked && addSpace.checked) {
+        if (rmbr.checked && addSpace.checked) {
           return textarea.value
             .split(",")
             .map(e => e.replace(regEx.default, ""))
             .filter(e => e !== "")
             .join(", ");
-        }
-
-        if (removeBreak.checked) {
+        } else if (rmbr.checked) {
           return textarea.value.replace(regEx.break, "");
-        }
-
-        if (addSpace.checked) {
+        } else if (addSpace.checked) {
           return textarea.value
             .split(",")
             .map(e => e.replace(regEx.trim, ""))
@@ -237,16 +219,14 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
         return "";
       })();
 
-      textarea.value = "";
+      //textarea.value = "";
       textarea.value = text;
 
       if (!!text) {
         //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
         responseProcess(req.fetch(text));
-
         return;
       }
-
       alert("Deletion cannot be applied to an empty prompt!");
     })();
 
@@ -259,19 +239,17 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
  *
  * @param string[] 重複している値を調べる配列
  * @return string[] 重複している値を全て含む配列
+ * @example white, white, white, repeated
  */
 function get_differences(array: string[]): string[] {
-  const duplicates: ValueCount = array_duplicates(array);
-  let out = [];
-
-  for (let words in duplicates) {
+  const duplicates = array_duplicates(array);
+  let out: string[] = [];
+  Object.keys(duplicates).forEach(words => {
     for (let i = 0; i <= duplicates[words] - 1; i++) {
       out.push(words);
     }
-  }
-
+  });
   return out;
-  // white, white, white, repeated
 }
 
 function array_unique(target: string[]): string[] {
@@ -279,46 +257,27 @@ function array_unique(target: string[]): string[] {
 }
 
 /**
- * $search_word が 配列 prompts に含まれている場合は、
- * 自分自身を含む search_word と重複する値を含んだ配列を返す
+ * item が 配列 array を含む場合、自身を含む item と重複する値を含んだ配列を返す
  *
- * @param string search_word   重複しているかどうか確認する単語
- * @param string[] prompts        Prompt の入っている配列
+ * @param string item   重複しているかどうか確認する単語
+ * @param string[] array        Prompt の入っている配列
  */
-function array_extract_duplicates(
-  search_word: string,
-  prompts: string[]
-): string[] {
-  return prompts.filter(e => search_word === e);
+function array_extract_duplicates(item: string, array: string[]): string[] {
+  return array.filter(e => item === e);
 }
 
-/**
- * 配列内で重複している値の種類を出力する (リファクタ版)
- *
- * @param $array 重複している値を調べる配列
- * @return array key = 値, value = 重複している回数
- */
-
-function array_duplicates(array: string[]): ValueCount {
-  const NOEXISTS = 1;
+function array_duplicates(array: string[]): { [index: string]: number } {
   const formatted = array_count_values(array);
-
-  const filtered: [string, number][] = Object.entries(formatted).filter(
-    value => value[1] !== NOEXISTS
-  );
-
-  const duplicates = (() => {
-    const object: ValueCount = {};
-    filtered.map((value, i) => (object[filtered[i][0]] = --value[1]));
-    return object;
-  })();
-
-  return duplicates;
+  const obj: { [index: string]: number } = {};
+  Object.values(formatted).forEach((x, i) => {
+    const v = Object.keys(formatted)[i];
+    if (x > 1) obj[v] = x;
+  });
+  return obj;
 }
 
 function array_count_values(array: any[]): object {
   const obj: { [index: string]: number } = {};
   array.forEach(k => (obj[k] = (obj[k] || 0) + 1));
-
   return obj;
 }
