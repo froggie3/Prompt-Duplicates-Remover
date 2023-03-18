@@ -15,7 +15,6 @@ class RequestLocalAPI {
   public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
     const cleaned_prompts = array_unique(Object.values(prompts_array));
-
     return {
       prompts: cleaned_prompts,
       reduced: {
@@ -93,16 +92,13 @@ function render({ prompts, reduced, redundants }: updateParameter): void {
 
 function injectSpanTag(prompt = "", redundants = ""): string | undefined {
   if (!prompt) return undefined;
-
   const array = prompt.split(", ");
   const refer = redundants.split(", ");
-
   const output = [...new Set(array)].flatMap(e =>
     refer.includes(e)
       ? [['<span class="promptHighlighted">', e, "</span>"].join("")]
       : [e]
   );
-
   return output.join(", ");
 }
 
@@ -115,15 +111,15 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
   const promptInfo = document.getElementById("prompt-information");
 
   let counter = 0;
-  let isopen = localStorage.getItem("isPromptInfoOpen") ?? "false"; 
+  let isopen = localStorage.getItem("isPromptInfoOpen") ?? "false";
 
   (function setInfomationState(): void {
     if (isopen === "true") {
       button?.classList.add("isopen");
       promptInfo?.classList.remove("ishidden");
-      return;
+    } else {
+      ++counter;
     }
-    ++counter;
   })();
 
   button.onclick = (): void => {
@@ -146,21 +142,16 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
 
 ((): void => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
-
   textarea.oninput = (): void => {
     ((): void => {
-      const req = new RequestLocalAPI();
       const text = textarea.value;
-
-      // when empty text is given
       if (!text) {
         render({});
-        return;
+      } else {
+        const req = new RequestLocalAPI();
+        responseProcess(req.fetch(text));
       }
-
-      responseProcess(req.fetch(text));
     })();
-
     saveCurrentPrompt(textarea.value);
   };
 })();
@@ -199,40 +190,39 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
           trim: /^ +| +$/g,
           break: /\n+/g,
         };
-
+        let x = "";
         if (rmbr.checked && addSpace.checked) {
-          return textarea.value
+          x = textarea.value
             .split(",")
             .map(e => e.replace(regEx.default, ""))
             .filter(e => e !== "")
             .join(", ");
         } else if (rmbr.checked) {
-          return textarea.value.replace(regEx.break, "");
+          x = textarea.value.replace(regEx.break, "");
         } else if (addSpace.checked) {
-          return textarea.value
+          x = textarea.value
             .split(",")
             .map(e => e.replace(regEx.trim, ""))
             .filter(e => e !== "")
             .join(", ");
         }
-
-        return "";
+        return x;
       })();
 
-      //textarea.value = "";
       textarea.value = text;
 
       if (!!text) {
-        //console.log(req.fetch(RequestAPI.API, content) || "Request failed");
         responseProcess(req.fetch(text));
-        return;
+      } else {
+        alert("Deletion cannot be applied to an empty prompt!");
       }
-      alert("Deletion cannot be applied to an empty prompt!");
     })();
 
     saveCurrentPrompt(textarea.value);
   };
 })();
+
+
 
 /**
  * 配列内で重複している値を全て出力する
