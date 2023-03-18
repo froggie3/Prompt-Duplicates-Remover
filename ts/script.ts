@@ -14,7 +14,7 @@ class RequestLocalAPI {
 
   public request(prompts: string): PromptResponse {
     const prompts_array = prompts.trim().split(", ");
-    const cleaned_prompts = array_unique(Object.values(prompts_array));
+    const cleaned_prompts = [...new Set(Object.values(prompts_array))];
     return {
       prompts: cleaned_prompts,
       reduced: {
@@ -28,45 +28,40 @@ class RequestLocalAPI {
     return this.request(prompts);
   }
 
-  public extractText(text: string) {
+  public extractText(text: string): string {
     const result = /\(?(.+)\)?/g.exec(text);
     return result ? result[1] : "";
   }
 }
 
-/**
- * ページロード時の処理
- */
-
-window.addEventListener("DOMContentLoaded", (): void => {
+window.addEventListener("DOMContentLoaded", () => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
+  textarea.maxLength = RequestLocalAPI.MAXLENGTH;
+});
 
-  (function setPromptFromStorage(): void {
-    const prompts = localStorage.getItem("prompt") ?? "";
-    textarea.value = prompts;
+window.addEventListener("DOMContentLoaded", () => {
+  const inStorage = (): boolean => {
+    const p = localStorage.getItem("prompt") ?? false;
+    return !p || true;
+  };
 
-    if (!prompts) render({});
-
-    (() => {
-      const req = new RequestLocalAPI();
-      responseProcess(req.fetch(prompts));
-    })();
-  })();
-
-  (function setMaxLength(): void {
-    textarea.maxLength = RequestLocalAPI.MAXLENGTH;
-  })();
+  if (inStorage()) {
+    const textarea = document.getElementById("inputArea") as HTMLInputElement;
+    const req = new RequestLocalAPI();
+    textarea.value = localStorage.getItem("prompt") ?? "";
+    responseProcess(req.fetch(textarea.value));
+  }
 });
 
 /**
  * 共通の処理
  */
 
-function saveCurrentPrompt(prompt: string): void {
-  localStorage.setItem(`prompt`, `${prompt}`);
+function saveCurrentPrompt(prompt: string) {
+  localStorage.setItem("prompt", prompt);
 }
 
-function responseProcess(data: PromptResponse): void {
+function responseProcess(data: PromptResponse) {
   const prompts = data.prompts;
   const reduced: number = data.reduced.prompt.length;
   const redundants = data.reduced.prompts;
@@ -78,7 +73,7 @@ function responseProcess(data: PromptResponse): void {
   });
 }
 
-function render({ prompts, reduced, redundants }: updateParameter): void {
+function render({ prompts, reduced, redundants }: updateParameter) {
   const element = {
     preview: document.getElementById("preview") as HTMLInputElement,
     reduced: document.getElementById("totalRemoved") as HTMLElement,
@@ -106,14 +101,13 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
  * Infomation の項目の開閉処理
  */
 
-((): void => {
+(() => {
   const button = document.getElementById("hideInfo") as HTMLElement;
   const promptInfo = document.getElementById("prompt-information");
-
   let counter = 0;
   let isopen = localStorage.getItem("isPromptInfoOpen") ?? "false";
 
-  (function setInfomationState(): void {
+  (function setInfomationState() {
     if (isopen === "true") {
       button?.classList.add("isopen");
       promptInfo?.classList.remove("ishidden");
@@ -122,17 +116,13 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
     }
   })();
 
-  button.onclick = (): void => {
-    ((): void => {
-      isopen = counter % 2 === 0 ? "false" : "true";
-      ++counter;
-      localStorage.setItem(`isPromptInfoOpen`, isopen);
-    })();
+  button.onclick = () => {
+    isopen = counter % 2 === 0 ? "false" : "true";
+    ++counter;
+    localStorage.setItem("isPromptInfoOpen", isopen);
 
-    ((): void => {
-      button?.classList.toggle("isopen");
-      promptInfo?.classList.toggle("ishidden");
-    })();
+    button?.classList.toggle("isopen");
+    promptInfo?.classList.toggle("ishidden");
   };
 })();
 
@@ -140,18 +130,15 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
  * テキストエリアの入力に応じてリクエストを行う処理
  */
 
-((): void => {
+(() => {
   const textarea = document.getElementById("inputArea") as HTMLInputElement;
-  textarea.oninput = (): void => {
-    ((): void => {
-      const text = textarea.value;
-      if (!text) {
-        render({});
-      } else {
-        const req = new RequestLocalAPI();
-        responseProcess(req.fetch(text));
-      }
-    })();
+  textarea.oninput = () => {
+    if (textarea.value === "") {
+      render({});
+    } else {
+      const req = new RequestLocalAPI();
+      responseProcess(req.fetch(textarea.value));
+    }
     saveCurrentPrompt(textarea.value);
   };
 })();
@@ -160,69 +147,50 @@ function injectSpanTag(prompt = "", redundants = ""): string | undefined {
  * プロンプトをクライアント側で浄化する処理
  */
 
-((): void => {
+(() => {
   const cleanze = document.getElementById("cleanze") as HTMLElement;
   const rmbr = document.getElementById("removeBreak") as HTMLInputElement;
   const addSpace = document.getElementById("addSpace") as HTMLInputElement;
 
-  ((): void => {
-    [rmbr, addSpace].forEach(e => {
-      e.onclick = (): void => {
-        if (!rmbr.checked && !addSpace.checked) {
-          cleanze?.classList.add("cleanze-hidden");
-          return;
-        }
-        cleanze?.classList.remove("cleanze-hidden");
-      };
-    });
-  })();
-
-  cleanze.onclick = (): void => {
-    const textarea = document.getElementById("inputArea") as HTMLInputElement;
-
-    ((): void => {
-      const req = new RequestLocalAPI();
-
-      // ここの部分は冗長なので、部分適用を会得したら直す
-      const text = ((): string => {
-        const regEx = {
-          default: /\n+|^ +| +$/g,
-          trim: /^ +| +$/g,
-          break: /\n+/g,
-        };
-        let x = "";
-        if (rmbr.checked && addSpace.checked) {
-          x = textarea.value
-            .split(",")
-            .map(e => e.replace(regEx.default, ""))
-            .filter(e => e !== "")
-            .join(", ");
-        } else if (rmbr.checked) {
-          x = textarea.value.replace(regEx.break, "");
-        } else if (addSpace.checked) {
-          x = textarea.value
-            .split(",")
-            .map(e => e.replace(regEx.trim, ""))
-            .filter(e => e !== "")
-            .join(", ");
-        }
-        return x;
-      })();
-
-      textarea.value = text;
-
-      if (!!text) {
-        responseProcess(req.fetch(text));
+  [rmbr, addSpace].forEach(e => {
+    e.onclick = () => {
+      if (!rmbr.checked && !addSpace.checked) {
+        cleanze?.classList.add("cleanze-hidden");
       } else {
-        alert("Deletion cannot be applied to an empty prompt!");
+        cleanze?.classList.remove("cleanze-hidden");
       }
-    })();
+    };
+  });
+
+  cleanze.onclick = () => {
+    const textarea = document.getElementById("inputArea") as HTMLInputElement;
+    const req = new RequestLocalAPI();
+    const text = clean(textarea.value);
+
+    function clean(x: string): string {
+      let arr = x.split(",");
+      if (rmbr.checked && addSpace.checked) {
+        arr = arr.map(e => e.replace(/\n+|^ +| +$/g, ""));
+      } else if (rmbr.checked) {
+        arr = arr.map(e => e.replace(/\n+/g, ""));
+      } else if (addSpace.checked) {
+        arr = arr.map(e => e.replace(/^ +| +$/g, ""));
+      }
+      arr = arr.filter(e => e !== "");
+      return arr.join(", ");
+    }
+
+    textarea.value = text;
+
+    if (!!text) {
+      responseProcess(req.fetch(text));
+    } else {
+      alert("Deletion cannot be applied to an empty prompt!");
+    }
 
     saveCurrentPrompt(textarea.value);
   };
 })();
-
-
 
 /**
  * 配列内で重複している値を全て出力する
@@ -240,10 +208,6 @@ function get_differences(array: string[]): string[] {
     }
   });
   return out;
-}
-
-function array_unique(target: string[]): string[] {
-  return [...new Set(target)];
 }
 
 /**
