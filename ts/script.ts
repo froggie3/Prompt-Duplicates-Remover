@@ -210,16 +210,6 @@ function get_differences(array: string[]): string[] {
   return out;
 }
 
-/**
- * item が 配列 array を含む場合、自身を含む item と重複する値を含んだ配列を返す
- *
- * @param string item   重複しているかどうか確認する単語
- * @param string[] array        Prompt の入っている配列
- */
-function array_extract_duplicates(item: string, array: string[]): string[] {
-  return array.filter(e => item === e);
-}
-
 function array_duplicates(array: string[]): { [index: string]: number } {
   const formatted = array_count_values(array);
   const obj: { [index: string]: number } = {};
