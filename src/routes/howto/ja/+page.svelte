@@ -3,7 +3,7 @@
 </svelte:head>
 
 <img
-    src="../img/ogp.png"
+    src="../img/ogp/ogp.png"
     width="480"
     alt="Prompts Duplicates Remover"
 />
