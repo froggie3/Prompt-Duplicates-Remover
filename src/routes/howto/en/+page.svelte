@@ -5,7 +5,7 @@
 <img
     src="../img/ogp.png"
     width="480"
-    alt="A Header image for Prompt Duplicates Remover"
+    alt="Prompt Duplicates Remover"
 />
 <h2 id="what-is-this">What is this?</h2>
 <p>A handy tool that can eliminate any duplicated tokens in your prompt:</p>

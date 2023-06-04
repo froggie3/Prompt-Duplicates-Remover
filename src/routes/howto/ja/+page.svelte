@@ -5,7 +5,7 @@
 <img
     src="../img/ogp.png"
     width="480"
-    alt="Prompts Duplicates Remover のヘッダー画像"
+    alt="Prompts Duplicates Remover"
 />
 <h2 id="このツールは何？">このツールは何？</h2>
 <p>
