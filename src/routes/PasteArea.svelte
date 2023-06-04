@@ -86,18 +86,6 @@
         border: 1px solid var(--border-color-gray-focused);
     }
 
-    @keyframes slidein {
-        0% {
-            opacity: 0;
-            transform: translateY(1rem);
-        }
-
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     .paste-area-wrapper {
         background-color: var(--background-color-white);
         display: flex;
