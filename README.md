@@ -1,6 +1,6 @@
 # Prompt Duplicates Remover
 
-<img src="src/img/ogp@2x.png" alt="Prompt Duplicates Remover"/>
+<img src="static/img/ogp@2x.png" alt="Prompt Duplicates Remover"/>
 
 ## What is this?
 
