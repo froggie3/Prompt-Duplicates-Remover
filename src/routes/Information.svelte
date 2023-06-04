@@ -21,9 +21,6 @@
 <div class="prompt-information-wrapper">
     <div class="prompt-information-title-wrapper">
         <h2 class="prompt-information-title">Information</h2>
-        <!-- <button class="triangle" class:rotated type="button" on:click={openInfo}>
-        🔻
-        </button> -->
     </div>
 
     <dl id="prompt-information" class:isHidden>
@@ -73,17 +70,6 @@
 
     .prompt-information-title {
         display: inline-block;
-    }
-
-    .triangle {
-        transition: transform var(--transition-duration-small);
-        transform: rotate(90deg);
-        font-size: 1.5em;
-        filter: grayscale(1);
-    }
-
-    .rotated {
-        transform: rotate(0deg) !important;
     }
 
     .isHidden {

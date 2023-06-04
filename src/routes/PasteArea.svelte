@@ -4,27 +4,13 @@
     import Information from "./Information.svelte";
     import Title from "./Title.svelte";
 
-    let promptIn = "";
-
-    let obj;
-
-    /**
-     * @type {string}
-     */
-    let fPrompt;
-
-    /**
-     * @type {string}
-     */
-    let reducedPrompts;
-
-    /**
-     * @type {number}
-     */
-    let reducedNumbers;
+    let promptInput = "";
+    let fPrompt = "";
+    let reducedNumbers = 0;
+    let reducedPrompts = "";
 
     $: {
-        obj = duplicatesRemove(promptIn);
+        const obj = duplicatesRemove(promptInput);
         fPrompt = obj["outPrompt"];
         reducedNumbers = obj["reduced"]["number"];
         reducedPrompts = obj["reduced"]["prompt"].join(", ");
@@ -40,24 +26,27 @@
             <label for="inputArea"> Your prompt </label>
 
             <textarea
-                bind:value={promptIn}
+                bind:value={promptInput}
                 class="prompt-textarea"
-                name="inputArea"
+                id="inputArea"
                 placeholder="1girl, solo"
                 rows="10"
             />
         </div>
 
-        <!--Preview /-->
-
-        <div id="previewWrap" class="box-textarea">
+        <div class="box-textarea">
             <label for="preview">Cleaned prompt</label>
-            <textarea class="prompt-textarea" bind:value={fPrompt} readonly />
+            <textarea
+                id="preview"
+                class="prompt-textarea"
+                bind:value={fPrompt}
+                readonly
+            />
         </div>
     </div>
 
-    <Controls promptIn={promptIn}/>
-    
+    <Controls bind:promptDirty={promptInput} />
+
     <Information numberRemoved={reducedNumbers} {reducedPrompts} />
 </div>
 
@@ -70,7 +59,6 @@
 
     :is(.box-textarea) > :is(label, prompt-textarea) {
         margin-bottom: 1em;
-        /* height: max-content; */
     }
 
     .cols {
@@ -79,13 +67,6 @@
         flex-direction: row;
         width: 100%;
     }
-
-    /* @media screen and (max-width: 767px) {
-    .box-textarea {
-      display: inherit;
-      grid-template-rows: min-content min-content;
-    }
-  } */
 
     .prompt-textarea {
         background-color: var(--background-color-white);
@@ -118,12 +99,25 @@
     }
 
     .paste-area-wrapper {
-        /* grid-gap: 1rem; */
-        /* grid: 1fr / repeat(2, 1fr); */
         background-color: var(--background-color-white);
         display: flex;
         flex-direction: column;
-        margin: 0 2rem;
         row-gap: 1rem;
+        margin: 0 2rem;
+    }
+
+    @media screen and (max-width: 768px) {
+        .paste-area-wrapper {
+            margin: 0 1rem;
+        }
+
+        .cols {
+            flex-direction: column;
+        }
+
+        .box-textarea {
+            width: 100%;
+            margin-bottom: 1em;
+        }
     }
 </style>

@@ -96,7 +96,7 @@
             prompt: promptReduced,
         };
 
-        console.log(promptsWithAttentions);
+        // console.log(promptsWithAttentions);
 
         return {
             outPrompt: outPrompt,

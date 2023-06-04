@@ -2,8 +2,8 @@
     <h2 class="prompt-information-title">Input</h2>
     <nav id="header-navigation">
         <span>📖</span>
-        <a class="button" href="howto-en.html" title="Guide">Guide</a>
-        <a class="button" href="howto-ja.html" title="使い方">使い方</a>
+        <a class="button" href="howto/en" title="Guide">Guide</a>
+        <a class="button" href="howto/ja" title="使い方">使い方</a>
     </nav>
 </div>
 

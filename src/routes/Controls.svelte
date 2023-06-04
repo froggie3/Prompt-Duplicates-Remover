@@ -3,20 +3,14 @@
     let checkBoxAddSpace = false;
     let isButtonVisible = false;
 
-    $: {
-        isButtonVisible = checkBoxAddSpace || checkBoxRemoveBreak;
-    }
+    $: isButtonVisible = checkBoxAddSpace || checkBoxRemoveBreak;
 
-    export let promptIn = "";
+    export let promptDirty = "";
 
     function buttonClick() {
-        //console.log(['Clicked', promptIn]);
-        promptIn = promptIn.replaceAll(/\n/g, "");
+        promptDirty = promptDirty.replaceAll(/\n/g, "");
     }
 
-    $: {
-        promptIn = promptIn;
-    }
 </script>
 
 <div>
@@ -27,12 +21,6 @@
                 remove break
             </label>
         </li>
-        <!-- <li>
-            <label>
-                <input type="checkbox" bind:checked={checkBoxAddSpace} />
-                add space before comma
-            </label>
-        </li> -->
     </ul>
     <button
         class="button"

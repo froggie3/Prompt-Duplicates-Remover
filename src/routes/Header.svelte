@@ -1,11 +1,18 @@
 <div class="header-wrapper">
-    <h1 class="header-title">Prompt Duplicates Remover</h1>
+    <a href="/">
+        <h1 class="header-title">Prompt Duplicates Remover</h1>
+    </a>
 </div>
 
 <style>
+    a {
+        color: white;
+        font-style: normal;
+        text-decoration: none;
+    }
     .header-title::before {
         content: "";
-        background-image: url(../img/icon-192.png);
+        background-image: url(../img/icon/icon-192.png);
         background-size: 100%;
         width: 1.5rem;
         height: 1.5rem;
