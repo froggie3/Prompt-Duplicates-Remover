@@ -1,12 +1,16 @@
+<script>
+    // https://kit.svelte.dev/docs/modules#$lib
+    import banner from "$lib/assets/images/banner.png";
+    import textbox from "$lib/assets/images/2023-02-26 133316.png";
+    import information from "$lib/assets/images/2023-02-26 133554.png";
+    import checkboxes from "$lib/assets/images/2023-02-26 133419.png";
+    import markedred from "$lib/assets/images/2023-02-26 133532.png";
+</script>
+
 <svelte:head>
     <title>How to use | Prompt Duplicates Remover</title>
 </svelte:head>
-
-<img
-    src="../img/ogp/ogp.png"
-    width="480"
-    alt="Prompt Duplicates Remover"
-/>
+<img src={banner} width="480" alt="Prompt Duplicates Remover" />
 <h2 id="what-is-this">What is this?</h2>
 <p>A handy tool that can eliminate any duplicated tokens in your prompt:</p>
 <p>
@@ -21,33 +25,21 @@
 <p>
     Paste your prompt into the textarea laveled with “Paste your prompt here“ .
 </p>
-<img
-    src="../img/docs/2023-02-26 133316.png"
-    width="480"
-    alt="textbox to contain prompts"
-/>
+<img src={textbox} width="480" alt="textbox to contain prompts" />
 
 <p>
     The tool parses the prompt at once, gets rid of the redundant words, and
     then displays the result. You can select the output text and copy into the
     clipboard to use it for generating images you like.
 </p>
-<img
-    src="../img/docs/2023-02-26 133316.png"
-    width="480"
-    alt="textbox to contain prompts"
-/>
+<img src={markedred} width="480" alt="textbox to contain prompts" />
 
 <p>
     The section below have “Reduced prompts“ and “Total prompts removed“ each.
     “Reduced prompts“ is a brief summary for the deleted words, whereas “Total
     prompts removed“ refers to the total number of tokens deleted.
 </p>
-<img
-    src="../img/docs/2023-02-26 133554.png"
-    width="480"
-    alt="duplicated kind of prompts"
-/>
+<img src={information} width="480" alt="duplicated kind of prompts" />
 
 <h2 id="unsupported-prompts">Unsupported prompts</h2>
 <p>
@@ -79,11 +71,7 @@
     </dd>
     <dt>
         <p>What are two checkbox under the textarea?</p>
-        <img
-            src="../img/docs/2023-02-26 133419.png"
-            width="480"
-            alt="checkboxes shown below"
-        />
+        <img src={checkboxes} width="480" alt="checkboxes shown below" />
     </dt>
     <dd>
         <p>
@@ -112,7 +100,7 @@
     p {
         text-align: justify;
     }
-    
+
     ul {
         padding-left: 1.5em;
     }

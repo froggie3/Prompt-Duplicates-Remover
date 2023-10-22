@@ -1,12 +1,17 @@
+<script>
+    // https://kit.svelte.dev/docs/modules#$lib
+    import banner from "$lib/assets/images/banner.png";
+    import textbox from "$lib/assets/images/2023-02-26 133316.png";
+    import information from "$lib/assets/images/2023-02-26 133554.png";
+    import checkboxes from "$lib/assets/images/2023-02-26 133419.png";
+    import markedred from "$lib/assets/images/2023-02-26 133532.png";
+</script>
+
 <svelte:head>
     <title>使い方 | Prompt Duplicates Remover</title>
 </svelte:head>
 
-<img
-    src="../img/ogp/ogp.png"
-    width="480"
-    alt="Prompts Duplicates Remover"
-/>
+<img src={banner} width="480" alt="Prompts Duplicates Remover" />
 <h2 id="このツールは何？">このツールは何？</h2>
 <p>
     このツールは、プロンプト内に存在する重複した単語を自動的に削除してくれるツールです。
@@ -21,16 +26,12 @@
     Input のセクションにある「Paste your prompt
     here」に自分が処理したいプロンプトを貼り付けます。
 </p>
-<img
-    src="../img/docs/2023-02-26 133316.png"
-    width="480"
-    alt="textbox to contain prompts"
-/>
+<img src={textbox} width="480" alt="textbox to contain prompts" />
 <p>
     貼りつけるやいなやプロンプトはすぐに処理され、すぐ隣の空白部分に処理結果が表示されます。自分で選択やコピーするなどして自分の好きなようにしてください。
 </p>
 <img
-    src="../img/docs/2023-02-26 133532.png"
+    src={markedred}
     width="480"
     alt="duplicated prompts marked with red background"
 />
@@ -40,11 +41,7 @@
     prompts」は削除されたプロンプトの要約で、他方「Total prompts
     removed」は削除された単語の合計数を意味します。
 </p>
-<img
-    src="../img/docs/2023-02-26 133554.png"
-    width="480"
-    alt="duplicated kind of prompts"
-/>
+<img src={information} width="480" alt="duplicated kind of prompts" />
 
 <h2 id="使い方">まだ未対応なプロンプトの種類</h2>
 <ul>
@@ -52,7 +49,7 @@
     <li>Prompt Matrix</li>
     <li>Alternating Words</li>
     <li>Dynamic Prompts</li>
-    </ul>
+</ul>
 <p>
     NAIのプロンプト、例えば <code>()</code> や <code>[]</code> でアテンションの度合いを変更する表記には対応していないので、別のツールを使用して変換したのちにこのツールを適用する必要があります。
 </p>
@@ -63,30 +60,6 @@
     >」や「<code>[pig|cow]</code
     >」など、こういったもの入力に対してもおかしな挙動をします。ご留意ください。
 </p>
-<img
-    src="../img/docs/2023-02-26 133316.png"
-    width="480"
-    alt="textbox to contain prompts"
-/>
-<p>
-    貼りつけるやいなやプロンプトはすぐに処理され、すぐ隣の空白部分に処理結果が表示されます。自分で選択やコピーするなどして自分の好きなようにしてください。
-</p>
-<img
-    src="../img/docs/2023-02-26 133532.png"
-    width="480"
-    alt="duplicated prompts marked with red background"
-/>
-<p>
-    「Input」セクションには、「Reduced prompts」と「Total prompts
-    removed」がそれぞれ表示されているはずです。「Reduced
-    prompts」は削除されたプロンプトの要約で、他方「Total prompts
-    removed」は削除された単語の合計数を意味します。
-</p>
-<img
-    src="../img/docs/2023-02-26 133554.png"
-    width="480"
-    alt="duplicated kind of prompts"
-/>
 
 <h2 id="よくある質問と答え">よくある質問と答え</h2>
 <dl>
@@ -100,11 +73,7 @@
     </dd>
     <dt>
         <p>入力欄の下のチェックボックスはなんですか？</p>
-        <img
-            src="../img/docs/2023-02-26 133419.png"
-            width="480"
-            alt="checkboxes shown below"
-        />
+        <img src={checkboxes} width="480" alt="checkboxes shown below" />
     </dt>
     <dd>
         <p>

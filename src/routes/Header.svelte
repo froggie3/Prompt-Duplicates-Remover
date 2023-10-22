@@ -12,7 +12,7 @@
     }
     .header-title::before {
         content: "";
-        background-image: url("$icons/icon-192.png");
+        background-image: url("$lib/assets/images/logo.svg");
         background-size: 100%;
         width: 1.5rem;
         height: 1.5rem;
